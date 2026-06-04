@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inventory Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f11; --bg2: #18181c; --bg3: #222228;
+    --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
+    --text: #e8e8ec; --text2: #888896; --text3: #555562;
+    --accent: #4ade80; --accent2: #22d3ee;
+    --warn: #fbbf24; --blue: #60a5fa;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 28px; border-bottom: 1px solid var(--border);
+    background: var(--bg); position: sticky; top: 0; z-index: 100;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .logo { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+  .divider-v { width: 1px; height: 22px; background: var(--border2); }
+  #last-updated { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+  .btn-refresh {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 14px; background: transparent;
+    border: 1px solid var(--border2); border-radius: 6px;
+    color: var(--text2); font-family: var(--mono); font-size: 12px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-refresh:hover { border-color: var(--accent2); color: var(--accent2); }
+  .btn-refresh.loading { opacity: 0.5; pointer-events: none; }
+
+  /* STATS */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px; background: var(--border); border-bottom: 1px solid var(--border);
+  }
+  .stat-card { background: var(--bg); padding: 18px 22px; }
+  .stat-label { font-family: var(--mono); font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 500; }
+  .stat-value.blue { color: var(--blue); }
+  .stat-value.warn { color: var(--warn); }
+  .stat-value.green { color: var(--accent); }
+  .stat-sub { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* TOOLBAR */
+  .toolbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 28px; border-bottom: 1px solid var(--border);
+    background: var(--bg2); flex-wrap: wrap;
+  }
+  input[type="text"], select {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 6px; color: var(--text); font-family: var(--mono);
+    font-size: 12px; padding: 7px 12px; outline: none; transition: border-color 0.15s;
+  }
+  input[type="text"]:focus, select:focus { border-color: var(--accent2); }
+  input[type="text"]::placeholder { color: var(--text3); }
+  select option { background: var(--bg3); }
+  #search-sku { width: 210px; }
+  .row-count { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-left: auto; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; padding: 0 28px 40px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 13px; }
+  thead tr { border-bottom: 1px solid var(--border2); }
+  th {
+    font-family: var(--mono); font-size: 10px; font-weight: 500;
+    color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 10px 12px; text-align: right; white-space: nowrap;
+  }
+  th:first-child { text-align: left; }
+  .th-kho { color: var(--blue) !important; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:hover { background: var(--bg2); }
+  tbody tr.slow-row { border-left: 2px solid var(--warn); }
+  td { padding: 10px 12px; text-align: right; font-family: var(--mono); font-size: 12px; color: var(--text2); white-space: nowrap; }
+  td:first-child { text-align: left; font-weight: 500; color: var(--text); font-size: 13px; }
+  .td-kho { color: var(--blue); }
+  .td-zero { color: var(--text3); }
+
+  .badge { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 3px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .badge-slow { background: rgba(251,191,36,0.12); color: var(--warn); border: 1px solid rgba(251,191,36,0.25); }
+  .badge-ok   { background: rgba(74,222,128,0.08); color: var(--accent); border: 1px solid rgba(74,222,128,0.18); }
+  .badge-zero { background: rgba(255,255,255,0.04); color: var(--text3); border: 1px solid var(--border); }
+
+  .empty-state { text-align: center; padding: 80px 0; color: var(--text3); font-family: var(--mono); font-size: 13px; }
+  .empty-state .big { font-size: 32px; margin-bottom: 12px; }
+  .more-row td { text-align: center; color: var(--text3); font-family: var(--mono); font-size: 11px; padding: 14px; }
+  .footnote { font-family: var(--mono); font-size: 10px; color: var(--text3); padding: 0 28px 20px; }
+
+  /* SPINNER */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { display: inline-block; animation: spin 1s linear infinite; }
+</style>
+</head>
+<body>
+
+<!-- ── THAY 2 DÒNG NÀY BẰNG THÔNG TIN SUPABASE CỦA BẠN ── -->
+<script>
+  const SUPABASE_URL = "https://xxxxxxxxxxxx.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";  // anon key
+</script>
+<!-- ──────────────────────────────────────────────────────── -->
+
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="logo">📦 Inventory</span>
+    <div class="divider-v"></div>
+    <span id="last-updated">Đang tải...</span>
+  </div>
+  <button class="btn-refresh" id="btn-refresh" onclick="loadData()">
+    <span id="refresh-icon">↺</span> Refresh
+  </button>
+</header>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Tổng SKU</div>
+    <div class="stat-value" id="stat-total">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Tồn kho BN</div>
+    <div class="stat-value blue" id="stat-bn">—</div>
+    <div class="stat-sub" id="stat-bn-sku"></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Tồn kho 1003</div>
+    <div class="stat-value blue" id="stat-1003">—</div>
+    <div class="stat-sub" id="stat-1003-sku"></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Tồn kho Others</div>
+    <div class="stat-value blue" id="stat-others">—</div>
+    <div class="stat-sub" id="stat-others-sku"></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">⚠ Cần đẩy hàng</div>
+    <div class="stat-value warn" id="stat-slow">—</div>
+    <div class="stat-sub">Tồn cao, bán chậm</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Bình thường</div>
+    <div class="stat-value green" id="stat-ok">—</div>
+    <div class="stat-sub">Đang bán tốt</div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <input type="text" id="search-sku" placeholder="Tìm SKU..." oninput="renderTable()" />
+  <select id="filter-status" onchange="renderTable()">
+    <option value="all">Tất cả trạng thái</option>
+    <option value="slow">⚠ Cần đẩy hàng</option>
+    <option value="ok">✓ Bình thường</option>
+    <option value="zero">Hết cả 3 kho</option>
+  </select>
+  <select id="filter-kho" onchange="renderTable()">
+    <option value="all">Tất cả kho</option>
+    <option value="bn">Có hàng ở BN</option>
+    <option value="1003">Có hàng ở 1003</option>
+    <option value="others">Có hàng ở Others</option>
+  </select>
+  <select id="sort-col" onchange="renderTable()">
+    <option value="ton_bn">Sắp xếp: Tồn BN ↓</option>
+    <option value="ton_1003">Tồn 1003 ↓</option>
+    <option value="ton_others">Tồn Others ↓</option>
+    <option value="tong_ton_va_duong">Tổng tồn+đường ↓</option>
+    <option value="avg_sl_thang">AVG/tháng ↓</option>
+    <option value="tong_sl_thang">SL tháng ↓</option>
+  </select>
+  <span class="row-count" id="row-count"></span>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="text-align:left;">SKU</th>
+        <th class="th-kho">Tồn BN</th>
+        <th class="th-kho">Tồn 1003</th>
+        <th class="th-kho">Tồn Others</th>
+        <th>Tổng tồn+đường</th>
+        <th>SL tháng</th>
+        <th>Shopee</th>
+        <th>TikTok</th>
+        <th>Sỉ</th>
+        <th>AVG/tháng</th>
+        <th>Trạng thái</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+      <tr><td colspan="11"><div class="empty-state"><div class="big"><span class="spin">↺</span></div>Đang kết nối Supabase...</div></td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="footnote">⚠ Cần đẩy = tổng tồn 3 kho > 0 và SL tháng = 0, hoặc tồn ÷ AVG > 6 tháng</div>
+
+<script>
+let allData = [];
+
+const n   = v => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
+const fmt = v => { const x = n(v); return x === 0 ? '<span class="td-zero">0</span>' : Math.round(x).toLocaleString('vi-VN'); };
+const fmtDec = v => { const x = n(v); return x === 0 ? '<span class="td-zero">—</span>' : x.toFixed(1); };
+
+function getStatus(r) {
+  const total = n(r.ton_bn) + n(r.ton_1003) + n(r.ton_others);
+  const sl    = n(r.tong_sl_thang);
+  const avg   = n(r.avg_sl_thang);
+  if (total <= 0) return 'zero';
+  if (sl === 0 || (avg > 0 && total / avg > 6)) return 'slow';
+  return 'ok';
+}
+
+const BADGE = {
+  slow: '<span class="badge badge-slow">⚠ Cần đẩy</span>',
+  ok:   '<span class="badge badge-ok">✓ Ổn</span>',
+  zero: '<span class="badge badge-zero">Hết hàng</span>',
+};
+
+// Fetch toàn bộ data từ Supabase (pagination 1000 rows/lần)
+async function fetchAll() {
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+    'Content-Type': 'application/json',
+  };
+
+  let all = [], from = 0, pageSize = 1000;
+  while (true) {
+    const url = `${SUPABASE_URL}/rest/v1/inventory?select=*&order=sku.asc&offset=${from}&limit=${pageSize}`;
+    const res  = await fetch(url, { headers });
+    if (!res.ok) throw new Error(`Supabase error: ${res.status} ${await res.text()}`);
+    const page = await res.json();
+    all = all.concat(page);
+    if (page.length < pageSize) break;
+    from += pageSize;
+  }
+  return all;
+}
+
+async function loadData() {
+  const btn  = document.getElementById('btn-refresh');
+  const icon = document.getElementById('refresh-icon');
+  btn.classList.add('loading');
+  icon.classList.add('spin');
+  icon.textContent = '↺';
+
+  try {
+    allData = await fetchAll();
+
+    // Lấy updated_at mới nhất
+    const latest = allData.reduce((max, r) => r.updated_at > max ? r.updated_at : max, '');
+    const dt = latest ? new Date(latest).toLocaleString('vi-VN') : '—';
+    document.getElementById('last-updated').textContent = `Cập nhật: ${dt} — ${allData.length.toLocaleString('vi-VN')} SKU`;
+
+    updateStats();
+    renderTable();
+  } catch (err) {
+    document.getElementById('last-updated').textContent = '⚠ Lỗi kết nối: ' + err.message;
+    document.getElementById('table-body').innerHTML =
+      `<tr><td colspan="11"><div class="empty-state"><div class="big">⚠</div>${err.message}</div></td></tr>`;
+  } finally {
+    btn.classList.remove('loading');
+    icon.classList.remove('spin');
+    icon.textContent = '↺';
+  }
+}
+
+function updateStats() {
+  const slow = allData.filter(r => getStatus(r) === 'slow').length;
+  const ok   = allData.filter(r => getStatus(r) === 'ok').length;
+  const sumBN  = allData.reduce((s, r) => s + n(r.ton_bn), 0);
+  const sum1003= allData.reduce((s, r) => s + n(r.ton_1003), 0);
+  const sumOth = allData.reduce((s, r) => s + n(r.ton_others), 0);
+  const skuBN  = allData.filter(r => n(r.ton_bn) > 0).length;
+  const sku1003= allData.filter(r => n(r.ton_1003) > 0).length;
+  const skuOth = allData.filter(r => n(r.ton_others) > 0).length;
+
+  document.getElementById('stat-total').textContent    = allData.length.toLocaleString('vi-VN');
+  document.getElementById('stat-bn').textContent       = sumBN.toLocaleString('vi-VN');
+  document.getElementById('stat-1003').textContent     = sum1003.toLocaleString('vi-VN');
+  document.getElementById('stat-others').textContent   = sumOth.toLocaleString('vi-VN');
+  document.getElementById('stat-slow').textContent     = slow.toLocaleString('vi-VN');
+  document.getElementById('stat-ok').textContent       = ok.toLocaleString('vi-VN');
+  document.getElementById('stat-bn-sku').textContent   = skuBN.toLocaleString('vi-VN') + ' SKU có hàng';
+  document.getElementById('stat-1003-sku').textContent = sku1003.toLocaleString('vi-VN') + ' SKU có hàng';
+  document.getElementById('stat-others-sku').textContent = skuOth.toLocaleString('vi-VN') + ' SKU có hàng';
+}
+
+function renderTable() {
+  const search  = document.getElementById('search-sku').value.toLowerCase().trim();
+  const filter  = document.getElementById('filter-status').value;
+  const khoFil  = document.getElementById('filter-kho').value;
+  const sortCol = document.getElementById('sort-col').value;
+
+  let data = allData.filter(r => {
+    if (search && !r.sku.toLowerCase().includes(search)) return false;
+    if (filter !== 'all' && getStatus(r) !== filter) return false;
+    if (khoFil === 'bn'     && n(r.ton_bn) <= 0)     return false;
+    if (khoFil === '1003'   && n(r.ton_1003) <= 0)   return false;
+    if (khoFil === 'others' && n(r.ton_others) <= 0) return false;
+    return true;
+  });
+
+  data.sort((a, b) => n(b[sortCol]) - n(a[sortCol]));
+  document.getElementById('row-count').textContent = data.length.toLocaleString('vi-VN') + ' SKU';
+
+  const body = document.getElementById('table-body');
+  if (!data.length) {
+    body.innerHTML = '<tr><td colspan="11"><div class="empty-state"><div class="big">🔍</div>Không tìm thấy SKU nào</div></td></tr>';
+    return;
+  }
+
+  body.innerHTML = data.slice(0, 500).map(r => {
+    const s = getStatus(r);
+    return `<tr class="${s === 'slow' ? 'slow-row' : ''}">
+      <td>${r.sku}</td>
+      <td class="td-kho">${fmt(r.ton_bn)}</td>
+      <td class="td-kho">${fmt(r.ton_1003)}</td>
+      <td class="td-kho">${fmt(r.ton_others)}</td>
+      <td>${fmt(r.tong_ton_va_duong)}</td>
+      <td>${fmt(r.tong_sl_thang)}</td>
+      <td>${fmt(r.sl_shopee)}</td>
+      <td>${fmt(r.sl_tiktok)}</td>
+      <td>${fmt(r.sl_si)}</td>
+      <td>${fmtDec(r.avg_sl_thang)}</td>
+      <td>${BADGE[s]}</td>
+    </tr>`;
+  }).join('') + (data.length > 500
+    ? `<tr class="more-row"><td colspan="11">Hiển thị 500 / ${data.length.toLocaleString('vi-VN')} SKU — dùng bộ lọc để thu hẹp</td></tr>`
+    : '');
+}
+
+// Load ngay khi mở trang
+loadData();
+</script>
+</body>
+</html>

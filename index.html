@@ -62,6 +62,29 @@
   .row-count { font-size: 12px; color: var(--text3); margin-left: auto; font-family: var(--mono); }
 
   .table-wrap { overflow-x: auto; padding: 0 24px 48px; }
+
+  /* Freeze cột SKU + 4 cột tồn */
+  thead th:nth-child(1), tbody td:nth-child(1) { position: sticky; left: 0; z-index: 2; background: var(--bg); }
+  thead th:nth-child(2), tbody td:nth-child(2) { position: sticky; left: 120px; z-index: 2; background: var(--bg); }
+  thead th:nth-child(3), tbody td:nth-child(3) { position: sticky; left: 220px; z-index: 2; background: var(--bg); }
+  thead th:nth-child(4), tbody td:nth-child(4) { position: sticky; left: 350px; z-index: 2; background: var(--bg); }
+  thead th:nth-child(5), tbody td:nth-child(5) { position: sticky; left: 450px; z-index: 2; background: var(--bg); }
+  tbody tr:hover td:nth-child(1),
+  tbody tr:hover td:nth-child(2),
+  tbody tr:hover td:nth-child(3),
+  tbody tr:hover td:nth-child(4),
+  tbody tr:hover td:nth-child(5) { background: var(--bg2); }
+  tbody tr.row-critical td:nth-child(1),
+  tbody tr.row-critical td:nth-child(2),
+  tbody tr.row-critical td:nth-child(3),
+  tbody tr.row-critical td:nth-child(4),
+  tbody tr.row-critical td:nth-child(5) { background: var(--bg); }
+  thead th { z-index: 1; }
+  thead th:nth-child(1),
+  thead th:nth-child(2),
+  thead th:nth-child(3),
+  thead th:nth-child(4),
+  thead th:nth-child(5) { z-index: 3; }
   table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
   thead tr { border-bottom: 1px solid var(--border2); }
   th {
@@ -194,7 +217,7 @@
     <option value="1003">Có hàng ở 1003</option>
   </select>
   <select id="sort-col" onchange="renderTable()">
-    <option value="ban_het">Sắp xếp: Bán hết sớm nhất</option>
+    <option value="ban_het">Thời gian bán hết Tồn ↑</option>
     <option value="ton_1013">Tồn 1013 ↓</option>
     <option value="ton_others">Tồn Others ↓</option>
     <option value="ton_bn">Tồn BN ↓</option>
@@ -222,7 +245,7 @@
         <th>Sản lượng 1 tháng Sỉ</th>
         <th>AVG SL/Thang co ban</th>
         <th>Tong SL ban</th>
-        <th>Bán hết sau</th>
+        <th>Thời gian bán hết Tồn</th>
         <th>Trạng thái</th>
       </tr>
     </thead>
@@ -275,10 +298,10 @@ function cellBanHet(r) {
   const tonTotal = n(r.ton_1013) + n(r.ton_others) + n(r.ton_bn) + n(r.ton_1003);
   if (tonTotal <= 0) return '<span class="n-zero">Hết hàng</span>';
   const bh = banHet(r);
-  if (bh === Infinity) return '<span class="n-red">Không bán</span>';
-  if (bh < 1)  return `<span class="n-red">${bh.toFixed(1)} tháng</span>`;
-  if (bh <= 3) return `<span class="n-warnc">${bh.toFixed(1)} tháng</span>`;
-  return `<span class="n-ok">${bh.toFixed(1)} tháng</span>`;
+  if (bh === Infinity) return '<span class="n-zero">—</span>';
+  if (bh < 1)  return `<span class="n-red">${bh.toFixed(1)}</span>`;
+  if (bh <= 3) return `<span class="n-warnc">${bh.toFixed(1)}</span>`;
+  return `<span class="n-ok">${bh.toFixed(1)}</span>`;
 }
 
 const BADGE = {

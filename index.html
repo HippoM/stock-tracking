@@ -5,119 +5,128 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Inventory Dashboard</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #0f0f11; --bg2: #18181c; --bg3: #222228;
-    --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
-    --text: #e8e8ec; --text2: #888896; --text3: #555562;
-    --accent: #4ade80; --accent2: #22d3ee;
-    --warn: #fbbf24; --blue: #60a5fa;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
+    --bg: #0f0f11; --bg2: #16161a; --bg3: #1e1e24;
+    --border: rgba(255,255,255,0.06); --border2: rgba(255,255,255,0.11);
+    --text: #f0f0f4; --text2: #9898a8; --text3: #55555f;
+    --accent: #4ade80; --blue: #60a5fa; --warn: #fbbf24; --red: #f87171; --purple: #c084fc;
+    --inter: 'Inter', sans-serif; --mono: 'JetBrains Mono', monospace;
   }
-
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+  body { font-family: var(--inter); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
 
   .topbar {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 28px; border-bottom: 1px solid var(--border);
-    background: var(--bg); position: sticky; top: 0; z-index: 100;
-    gap: 12px; flex-wrap: wrap;
+    padding: 14px 24px; border-bottom: 1px solid var(--border);
+    background: var(--bg); position: sticky; top: 0; z-index: 100; gap: 12px; flex-wrap: wrap;
   }
-  .topbar-left { display: flex; align-items: center; gap: 14px; }
-  .logo { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
-  .divider-v { width: 1px; height: 22px; background: var(--border2); }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .logo { font-size: 14px; font-weight: 600; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .divider-v { width: 1px; height: 20px; background: var(--border2); }
   #last-updated { font-family: var(--mono); font-size: 11px; color: var(--text3); }
-
   .btn-refresh {
-    display: inline-flex; align-items: center; gap: 7px;
-    padding: 7px 14px; background: transparent;
-    border: 1px solid var(--border2); border-radius: 6px;
-    color: var(--text2); font-family: var(--mono); font-size: 12px;
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;
+    background: transparent; border: 1px solid var(--border2); border-radius: 8px;
+    color: var(--text2); font-family: var(--inter); font-size: 13px; font-weight: 500;
     cursor: pointer; transition: all 0.15s;
   }
-  .btn-refresh:hover { border-color: var(--accent2); color: var(--accent2); }
-  .btn-refresh.loading { opacity: 0.5; pointer-events: none; }
+  .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-refresh.loading { opacity: 0.4; pointer-events: none; }
 
-  /* STATS */
   .stats-row {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
     gap: 1px; background: var(--border); border-bottom: 1px solid var(--border);
   }
-  .stat-card { background: var(--bg); padding: 18px 22px; }
-  .stat-label { font-family: var(--mono); font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-  .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 500; }
-  .stat-value.blue { color: var(--blue); }
-  .stat-value.warn { color: var(--warn); }
-  .stat-value.green { color: var(--accent); }
-  .stat-sub { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 4px; }
+  .stat-card { background: var(--bg); padding: 16px 20px; }
+  .stat-label { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .stat-value { font-family: var(--mono); font-size: 21px; font-weight: 500; }
+  .c-blue { color: var(--blue); } .c-warn { color: var(--warn); } .c-green { color: var(--accent); } .c-red { color: var(--red); } .c-purple { color: var(--purple); }
+  .stat-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
 
-  /* TOOLBAR */
   .toolbar {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 24px; border-bottom: 1px solid var(--border);
     background: var(--bg2); flex-wrap: wrap;
   }
   input[type="text"], select {
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: 6px; color: var(--text); font-family: var(--mono);
-    font-size: 12px; padding: 7px 12px; outline: none; transition: border-color 0.15s;
+    background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px;
+    color: var(--text); font-family: var(--inter); font-size: 13px;
+    padding: 7px 12px; outline: none; transition: border-color 0.15s;
   }
-  input[type="text"]:focus, select:focus { border-color: var(--accent2); }
+  input[type="text"]:focus, select:focus { border-color: var(--blue); }
   input[type="text"]::placeholder { color: var(--text3); }
   select option { background: var(--bg3); }
-  #search-sku { width: 210px; }
-  .row-count { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-left: auto; }
+  #search-sku { width: 200px; }
+  .row-count { font-size: 12px; color: var(--text3); margin-left: auto; font-family: var(--mono); }
 
-  /* TABLE */
-  .table-wrap { overflow-x: auto; padding: 0 28px 40px; }
-  table { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 13px; }
+  .table-wrap { overflow-x: auto; padding: 0 24px 48px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
   thead tr { border-bottom: 1px solid var(--border2); }
   th {
-    font-family: var(--mono); font-size: 10px; font-weight: 500;
-    color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em;
-    padding: 10px 12px; text-align: right; white-space: nowrap;
+    font-size: 11px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 10px 10px; text-align: right; white-space: nowrap;
   }
   th:first-child { text-align: left; }
-  .th-kho { color: var(--blue) !important; }
+
+  /* Highlight group headers */
+  .th-1013   { color: var(--purple) !important; }
+  .th-others { color: #fb923c !important; }
+  .th-bn     { color: var(--blue) !important; }
+  .th-1003   { color: #38bdf8 !important; }
+  .th-total  { color: var(--warn) !important; }
+  .th-sl     { color: var(--accent) !important; }
+
   tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
   tbody tr:hover { background: var(--bg2); }
-  tbody tr.slow-row { border-left: 2px solid var(--warn); }
-  td { padding: 10px 12px; text-align: right; font-family: var(--mono); font-size: 12px; color: var(--text2); white-space: nowrap; }
-  td:first-child { text-align: left; font-weight: 500; color: var(--text); font-size: 13px; }
-  .td-kho { color: var(--blue); }
-  .td-zero { color: var(--text3); }
+  tbody tr.row-critical { border-left: 2px solid var(--red); }
+  tbody tr.row-warn     { border-left: 2px solid var(--warn); }
 
-  .badge { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 3px; letter-spacing: 0.05em; text-transform: uppercase; }
-  .badge-slow { background: rgba(251,191,36,0.12); color: var(--warn); border: 1px solid rgba(251,191,36,0.25); }
-  .badge-ok   { background: rgba(74,222,128,0.08); color: var(--accent); border: 1px solid rgba(74,222,128,0.18); }
-  .badge-zero { background: rgba(255,255,255,0.04); color: var(--text3); border: 1px solid var(--border); }
+  td { padding: 9px 10px; text-align: right; font-size: 13px; color: var(--text2); white-space: nowrap; }
+  td:first-child { text-align: left; font-weight: 500; color: var(--text); font-family: var(--mono); }
 
-  .empty-state { text-align: center; padding: 80px 0; color: var(--text3); font-family: var(--mono); font-size: 13px; }
-  .empty-state .big { font-size: 32px; margin-bottom: 12px; }
-  .more-row td { text-align: center; color: var(--text3); font-family: var(--mono); font-size: 11px; padding: 14px; }
-  .footnote { font-family: var(--mono); font-size: 10px; color: var(--text3); padding: 0 28px 20px; }
+  /* Cell color classes */
+  .n         { font-family: var(--mono); }
+  .n-zero    { font-family: var(--mono); color: var(--text3); }
+  .n-1013    { font-family: var(--mono); color: var(--purple); }
+  .n-others  { font-family: var(--mono); color: #fb923c; }
+  .n-bn      { font-family: var(--mono); color: var(--blue); }
+  .n-1003    { font-family: var(--mono); color: #38bdf8; }
+  .n-total   { font-family: var(--mono); color: var(--warn); font-weight: 500; }
+  .n-sl      { font-family: var(--mono); color: var(--accent); font-weight: 500; }
+  .n-red     { font-family: var(--mono); color: var(--red); font-weight: 500; }
+  .n-warnc   { font-family: var(--mono); color: var(--warn); }
+  .n-ok      { font-family: var(--mono); color: var(--accent); }
 
-  /* SPINNER */
+  .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px; white-space: nowrap; }
+  .badge-critical { background: rgba(248,113,113,0.12); color: var(--red);    border: 1px solid rgba(248,113,113,0.25); }
+  .badge-warn     { background: rgba(251,191,36,0.10);  color: var(--warn);   border: 1px solid rgba(251,191,36,0.22); }
+  .badge-ok       { background: rgba(74,222,128,0.08);  color: var(--accent); border: 1px solid rgba(74,222,128,0.18); }
+  .badge-zero     { background: rgba(255,255,255,0.04); color: var(--text3);  border: 1px solid var(--border2); }
+
+  .empty-state { text-align: center; padding: 80px 0; color: var(--text3); font-size: 14px; }
+  .empty-state .big { font-size: 36px; margin-bottom: 12px; }
+  .more-row td { text-align: center; color: var(--text3); font-size: 12px; padding: 14px; }
+  .footnote { font-size: 11px; color: var(--text3); padding: 0 24px 24px; line-height: 2; }
+
   @keyframes spin { to { transform: rotate(360deg); } }
-  .spin { display: inline-block; animation: spin 1s linear infinite; }
+  .spin { display: inline-block; animation: spin 0.8s linear infinite; }
 </style>
 </head>
 <body>
 
-<!-- ── THAY 2 DÒNG NÀY BẰNG THÔNG TIN SUPABASE CỦA BẠN ── -->
+<!-- ── THAY 2 DÒNG NÀY ─────────────────────────────── -->
 <script>
   const SUPABASE_URL = "https://gzdbuqevfyirgfjkwkhb.supabase.co";
-  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6ZGJ1cWV2Znlpcmdmamt3a2hiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NTA0ODYsImV4cCI6MjA5NjEyNjQ4Nn0.WfeUan3Q2fIeIMWk6YoMurj66nQqXyn5JeqHCeN4jRY";  // anon key
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6ZGJ1cWV2Znlpcmdmamt3a2hiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NTA0ODYsImV4cCI6MjA5NjEyNjQ4Nn0.WfeUan3Q2fIeIMWk6YoMurj66nQqXyn5JeqHCeN4jRY";
 </script>
-<!-- ──────────────────────────────────────────────────────── -->
+<!-- ──────────────────────────────────────────────────── -->
 
 <header class="topbar">
   <div class="topbar-left">
-    <span class="logo">📦 Inventory</span>
+    <span class="logo">📦 <span>Inventory</span></span>
     <div class="divider-v"></div>
     <span id="last-updated">Đang tải...</span>
   </div>
@@ -132,53 +141,67 @@
     <div class="stat-value" id="stat-total">—</div>
   </div>
   <div class="stat-card">
+    <div class="stat-label">Tồn kho 1013</div>
+    <div class="stat-value c-purple" id="stat-1013">—</div>
+    <div class="stat-sub" id="stat-1013-sku"></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Tồn kho Others</div>
+    <div class="stat-value" style="color:#fb923c" id="stat-others">—</div>
+    <div class="stat-sub" id="stat-others-sku"></div>
+  </div>
+  <div class="stat-card">
     <div class="stat-label">Tồn kho BN</div>
-    <div class="stat-value blue" id="stat-bn">—</div>
+    <div class="stat-value c-blue" id="stat-bn">—</div>
     <div class="stat-sub" id="stat-bn-sku"></div>
   </div>
   <div class="stat-card">
     <div class="stat-label">Tồn kho 1003</div>
-    <div class="stat-value blue" id="stat-1003">—</div>
-    <div class="stat-sub" id="stat-1003-sku"></div>
+    <div class="stat-value" style="color:#38bdf8" id="stat-1003b">—</div>
+    <div class="stat-sub" id="stat-1003b-sku"></div>
   </div>
   <div class="stat-card">
-    <div class="stat-label">Tồn kho Others</div>
-    <div class="stat-value blue" id="stat-others">—</div>
-    <div class="stat-sub" id="stat-others-sku"></div>
+    <div class="stat-label">🔴 Khẩn &lt; 1 tháng</div>
+    <div class="stat-value c-red" id="stat-critical">—</div>
+    <div class="stat-sub">Cần đẩy ngay</div>
   </div>
   <div class="stat-card">
-    <div class="stat-label">⚠ Cần đẩy hàng</div>
-    <div class="stat-value warn" id="stat-slow">—</div>
-    <div class="stat-sub">Tồn cao, bán chậm</div>
+    <div class="stat-label">⚠ Chú ý 1–3 tháng</div>
+    <div class="stat-value c-warn" id="stat-warn">—</div>
+    <div class="stat-sub">Theo dõi thêm</div>
   </div>
   <div class="stat-card">
-    <div class="stat-label">Bình thường</div>
-    <div class="stat-value green" id="stat-ok">—</div>
-    <div class="stat-sub">Đang bán tốt</div>
+    <div class="stat-label">✓ Bình thường</div>
+    <div class="stat-value c-green" id="stat-ok">—</div>
+    <div class="stat-sub">&gt; 3 tháng</div>
   </div>
 </div>
 
 <div class="toolbar">
-  <input type="text" id="search-sku" placeholder="Tìm SKU..." oninput="renderTable()" />
+  <input type="text" id="search-sku" placeholder="🔍 Tìm SKU..." oninput="renderTable()" />
   <select id="filter-status" onchange="renderTable()">
     <option value="all">Tất cả trạng thái</option>
-    <option value="slow">⚠ Cần đẩy hàng</option>
+    <option value="critical">🔴 Khẩn — bán hết &lt; 1 tháng</option>
+    <option value="warn">⚠ Chú ý — 1–3 tháng</option>
     <option value="ok">✓ Bình thường</option>
-    <option value="zero">Hết cả 3 kho</option>
+    <option value="zero">Hết cả 4 kho</option>
   </select>
   <select id="filter-kho" onchange="renderTable()">
     <option value="all">Tất cả kho</option>
+    <option value="1013">Có hàng ở 1013</option>
+    <option value="others">Có hàng ở Others</option>
     <option value="bn">Có hàng ở BN</option>
     <option value="1003">Có hàng ở 1003</option>
-    <option value="others">Có hàng ở Others</option>
   </select>
   <select id="sort-col" onchange="renderTable()">
-    <option value="ton_bn">Sắp xếp: Tồn BN ↓</option>
-    <option value="ton_1003">Tồn 1003 ↓</option>
+    <option value="ban_het">Sắp xếp: Bán hết sớm nhất</option>
+    <option value="ton_1013">Tồn 1013 ↓</option>
     <option value="ton_others">Tồn Others ↓</option>
-    <option value="tong_ton_va_duong">Tổng tồn+đường ↓</option>
-    <option value="avg_sl_thang">AVG/tháng ↓</option>
-    <option value="tong_sl_thang">SL tháng ↓</option>
+    <option value="ton_bn">Tồn BN ↓</option>
+    <option value="ton_1003">Tồn 1003 ↓</option>
+    <option value="tong_ton_va_duong">Tổng Tồn + Hàng đi đường ↓</option>
+    <option value="avg_sl_thang">AVG SL/Tháng ↓</option>
+    <option value="tong_sl_ban">Tong SL ban ↓</option>
   </select>
   <span class="row-count" id="row-count"></span>
 </div>
@@ -188,115 +211,132 @@
     <thead>
       <tr>
         <th style="text-align:left;">SKU</th>
-        <th class="th-kho">Tồn BN</th>
-        <th class="th-kho">Tồn 1003</th>
-        <th class="th-kho">Tồn Others</th>
-        <th>Tổng tồn+đường</th>
-        <th>SL tháng</th>
-        <th>Shopee</th>
-        <th>TikTok</th>
-        <th>Sỉ</th>
-        <th>AVG/tháng</th>
+        <th class="th-1013">Tồn kho 1013</th>
+        <th class="th-others">Tồn kho Khác (Others)</th>
+        <th class="th-bn">Tồn kho BN</th>
+        <th class="th-1003">Tồn kho 1003</th>
+        <th class="th-total">Tổng Tồn + Hàng đi đường</th>
+        <th class="th-sl">Tổng sản lượng 1 tháng</th>
+        <th>Sản lượng 1 tháng Shopee</th>
+        <th>Sản lượng 1 tháng Tiktok</th>
+        <th>Sản lượng 1 tháng Sỉ</th>
+        <th>AVG SL/Thang co ban</th>
+        <th>Tong SL ban</th>
+        <th>Bán hết sau</th>
         <th>Trạng thái</th>
       </tr>
     </thead>
     <tbody id="table-body">
-      <tr><td colspan="11"><div class="empty-state"><div class="big"><span class="spin">↺</span></div>Đang kết nối Supabase...</div></td></tr>
+      <tr><td colspan="14"><div class="empty-state"><div class="big"><span class="spin">↺</span></div>Đang kết nối Supabase...</div></td></tr>
     </tbody>
   </table>
 </div>
-<div class="footnote">⚠ Cần đẩy = tổng tồn 3 kho > 0 và SL tháng = 0, hoặc tồn ÷ AVG > 6 tháng</div>
+<div class="footnote">
+  <b>Bán hết sau</b> = Tổng Tồn + Hàng đi đường ÷ AVG SL/Tháng &nbsp;|&nbsp;
+  🔴 <b>Khẩn</b>: &lt; 1 tháng (hoặc có tồn nhưng AVG = 0) &nbsp;|&nbsp;
+  ⚠ <b>Chú ý</b>: 1–3 tháng &nbsp;|&nbsp;
+  ✓ <b>Bình thường</b>: &gt; 3 tháng
+</div>
 
 <script>
 let allData = [];
+const n = v => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
 
-const n   = v => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
-const fmt = v => { const x = n(v); return x === 0 ? '<span class="td-zero">0</span>' : Math.round(x).toLocaleString('vi-VN'); };
-const fmtDec = v => { const x = n(v); return x === 0 ? '<span class="td-zero">—</span>' : x.toFixed(1); };
+function banHet(r) {
+  const tonTotal = n(r.ton_1013) + n(r.ton_others) + n(r.ton_bn) + n(r.ton_1003);
+  if (tonTotal <= 0) return null;
+  const avg = n(r.avg_sl_thang);
+  if (avg <= 0) return Infinity;
+  return n(r.tong_ton_va_duong) / avg;
+}
 
 function getStatus(r) {
-  const total = n(r.ton_bn) + n(r.ton_1003) + n(r.ton_others);
-  const sl    = n(r.tong_sl_thang);
-  const avg   = n(r.avg_sl_thang);
-  if (total <= 0) return 'zero';
-  if (sl === 0 || (avg > 0 && total / avg > 6)) return 'slow';
+  const tonTotal = n(r.ton_1013) + n(r.ton_others) + n(r.ton_bn) + n(r.ton_1003);
+  if (tonTotal <= 0) return 'zero';
+  const bh = banHet(r);
+  if (bh === Infinity || bh < 1) return 'critical';
+  if (bh <= 3) return 'warn';
   return 'ok';
 }
 
+function cellN(v, cls) {
+  const x = n(v);
+  if (x === 0) return '<span class="n-zero">0</span>';
+  return `<span class="${cls}">${Math.round(x).toLocaleString('vi-VN')}</span>`;
+}
+
+function cellDec(v) {
+  const x = n(v);
+  if (x === 0) return '<span class="n-zero">—</span>';
+  return `<span class="n">${x.toFixed(1)}</span>`;
+}
+
+function cellBanHet(r) {
+  const tonTotal = n(r.ton_1013) + n(r.ton_others) + n(r.ton_bn) + n(r.ton_1003);
+  if (tonTotal <= 0) return '<span class="n-zero">Hết hàng</span>';
+  const bh = banHet(r);
+  if (bh === Infinity) return '<span class="n-red">Không bán</span>';
+  if (bh < 1)  return `<span class="n-red">${bh.toFixed(1)} tháng</span>`;
+  if (bh <= 3) return `<span class="n-warnc">${bh.toFixed(1)} tháng</span>`;
+  return `<span class="n-ok">${bh.toFixed(1)} tháng</span>`;
+}
+
 const BADGE = {
-  slow: '<span class="badge badge-slow">⚠ Cần đẩy</span>',
-  ok:   '<span class="badge badge-ok">✓ Ổn</span>',
-  zero: '<span class="badge badge-zero">Hết hàng</span>',
+  critical: '<span class="badge badge-critical">🔴 Khẩn</span>',
+  warn:     '<span class="badge badge-warn">⚠ Chú ý</span>',
+  ok:       '<span class="badge badge-ok">✓ Ổn</span>',
+  zero:     '<span class="badge badge-zero">Hết hàng</span>',
 };
 
-// Fetch toàn bộ data từ Supabase (pagination 1000 rows/lần)
 async function fetchAll() {
-  const headers = {
-    'apikey': SUPABASE_KEY,
-    'Authorization': 'Bearer ' + SUPABASE_KEY,
-    'Content-Type': 'application/json',
-  };
-
-  let all = [], from = 0, pageSize = 1000;
+  const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+  let all = [], from = 0;
   while (true) {
-    const url = `${SUPABASE_URL}/rest/v1/inventory?select=*&order=sku.asc&offset=${from}&limit=${pageSize}`;
-    const res  = await fetch(url, { headers });
-    if (!res.ok) throw new Error(`Supabase error: ${res.status} ${await res.text()}`);
+    const res  = await fetch(`${SUPABASE_URL}/rest/v1/inventory?select=*&order=sku.asc&offset=${from}&limit=1000`, { headers });
+    if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
     const page = await res.json();
     all = all.concat(page);
-    if (page.length < pageSize) break;
-    from += pageSize;
+    if (page.length < 1000) break;
+    from += 1000;
   }
   return all;
 }
 
 async function loadData() {
-  const btn  = document.getElementById('btn-refresh');
+  const btn = document.getElementById('btn-refresh');
   const icon = document.getElementById('refresh-icon');
-  btn.classList.add('loading');
-  icon.classList.add('spin');
-  icon.textContent = '↺';
-
+  btn.classList.add('loading'); icon.classList.add('spin');
   try {
     allData = await fetchAll();
-
-    // Lấy updated_at mới nhất
-    const latest = allData.reduce((max, r) => r.updated_at > max ? r.updated_at : max, '');
+    const latest = allData.reduce((m, r) => r.updated_at > m ? r.updated_at : m, '');
     const dt = latest ? new Date(latest).toLocaleString('vi-VN') : '—';
-    document.getElementById('last-updated').textContent = `Cập nhật: ${dt} — ${allData.length.toLocaleString('vi-VN')} SKU`;
-
-    updateStats();
-    renderTable();
-  } catch (err) {
-    document.getElementById('last-updated').textContent = '⚠ Lỗi kết nối: ' + err.message;
+    document.getElementById('last-updated').textContent =
+      `Cập nhật: ${dt} — ${allData.length.toLocaleString('vi-VN')} SKU`;
+    updateStats(); renderTable();
+  } catch(err) {
+    document.getElementById('last-updated').textContent = '⚠ ' + err.message;
     document.getElementById('table-body').innerHTML =
-      `<tr><td colspan="11"><div class="empty-state"><div class="big">⚠</div>${err.message}</div></td></tr>`;
+      `<tr><td colspan="14"><div class="empty-state"><div class="big">⚠</div>${err.message}</div></td></tr>`;
   } finally {
-    btn.classList.remove('loading');
-    icon.classList.remove('spin');
-    icon.textContent = '↺';
+    btn.classList.remove('loading'); icon.classList.remove('spin'); icon.textContent = '↺';
   }
 }
 
 function updateStats() {
-  const slow = allData.filter(r => getStatus(r) === 'slow').length;
-  const ok   = allData.filter(r => getStatus(r) === 'ok').length;
-  const sumBN  = allData.reduce((s, r) => s + n(r.ton_bn), 0);
-  const sum1003= allData.reduce((s, r) => s + n(r.ton_1003), 0);
-  const sumOth = allData.reduce((s, r) => s + n(r.ton_others), 0);
-  const skuBN  = allData.filter(r => n(r.ton_bn) > 0).length;
-  const sku1003= allData.filter(r => n(r.ton_1003) > 0).length;
-  const skuOth = allData.filter(r => n(r.ton_others) > 0).length;
-
+  const f = (fn) => allData.filter(fn).length;
+  const s = (fn) => allData.reduce((acc, r) => acc + n(fn(r)), 0);
   document.getElementById('stat-total').textContent    = allData.length.toLocaleString('vi-VN');
-  document.getElementById('stat-bn').textContent       = sumBN.toLocaleString('vi-VN');
-  document.getElementById('stat-1003').textContent     = sum1003.toLocaleString('vi-VN');
-  document.getElementById('stat-others').textContent   = sumOth.toLocaleString('vi-VN');
-  document.getElementById('stat-slow').textContent     = slow.toLocaleString('vi-VN');
-  document.getElementById('stat-ok').textContent       = ok.toLocaleString('vi-VN');
-  document.getElementById('stat-bn-sku').textContent   = skuBN.toLocaleString('vi-VN') + ' SKU có hàng';
-  document.getElementById('stat-1003-sku').textContent = sku1003.toLocaleString('vi-VN') + ' SKU có hàng';
-  document.getElementById('stat-others-sku').textContent = skuOth.toLocaleString('vi-VN') + ' SKU có hàng';
+  document.getElementById('stat-1013').textContent     = s(r=>r.ton_1013).toLocaleString('vi-VN');
+  document.getElementById('stat-others').textContent   = s(r=>r.ton_others).toLocaleString('vi-VN');
+  document.getElementById('stat-bn').textContent       = s(r=>r.ton_bn).toLocaleString('vi-VN');
+  document.getElementById('stat-1003b').textContent    = s(r=>r.ton_1003).toLocaleString('vi-VN');
+  document.getElementById('stat-1013-sku').textContent   = f(r=>n(r.ton_1013)>0).toLocaleString('vi-VN') + ' SKU có hàng';
+  document.getElementById('stat-others-sku').textContent = f(r=>n(r.ton_others)>0).toLocaleString('vi-VN') + ' SKU có hàng';
+  document.getElementById('stat-bn-sku').textContent     = f(r=>n(r.ton_bn)>0).toLocaleString('vi-VN') + ' SKU có hàng';
+  document.getElementById('stat-1003b-sku').textContent  = f(r=>n(r.ton_1003)>0).toLocaleString('vi-VN') + ' SKU có hàng';
+  document.getElementById('stat-critical').textContent = f(r=>getStatus(r)==='critical').toLocaleString('vi-VN');
+  document.getElementById('stat-warn').textContent     = f(r=>getStatus(r)==='warn').toLocaleString('vi-VN');
+  document.getElementById('stat-ok').textContent       = f(r=>getStatus(r)==='ok').toLocaleString('vi-VN');
 }
 
 function renderTable() {
@@ -308,42 +348,58 @@ function renderTable() {
   let data = allData.filter(r => {
     if (search && !r.sku.toLowerCase().includes(search)) return false;
     if (filter !== 'all' && getStatus(r) !== filter) return false;
+    if (khoFil === '1013'   && n(r.ton_1013) <= 0)   return false;
+    if (khoFil === 'others' && n(r.ton_others) <= 0) return false;
     if (khoFil === 'bn'     && n(r.ton_bn) <= 0)     return false;
     if (khoFil === '1003'   && n(r.ton_1003) <= 0)   return false;
-    if (khoFil === 'others' && n(r.ton_others) <= 0) return false;
     return true;
   });
 
-  data.sort((a, b) => n(b[sortCol]) - n(a[sortCol]));
-  document.getElementById('row-count').textContent = data.length.toLocaleString('vi-VN') + ' SKU';
+  data.sort((a, b) => {
+    if (sortCol === 'ban_het') {
+      const ba = banHet(a), bb = banHet(b);
+      if (ba === null && bb === null) return 0;
+      if (ba === null) return 1;
+      if (bb === null) return -1;
+      if (ba === Infinity && bb === Infinity) return 0;
+      if (ba === Infinity) return -1;
+      if (bb === Infinity) return 1;
+      return ba - bb;
+    }
+    return n(b[sortCol]) - n(a[sortCol]);
+  });
 
+  document.getElementById('row-count').textContent = data.length.toLocaleString('vi-VN') + ' SKU';
   const body = document.getElementById('table-body');
+
   if (!data.length) {
-    body.innerHTML = '<tr><td colspan="11"><div class="empty-state"><div class="big">🔍</div>Không tìm thấy SKU nào</div></td></tr>';
+    body.innerHTML = '<tr><td colspan="14"><div class="empty-state"><div class="big">🔍</div>Không tìm thấy SKU nào</div></td></tr>';
     return;
   }
 
   body.innerHTML = data.slice(0, 500).map(r => {
     const s = getStatus(r);
-    return `<tr class="${s === 'slow' ? 'slow-row' : ''}">
+    return `<tr class="${s==='critical'?'row-critical':s==='warn'?'row-warn':''}">
       <td>${r.sku}</td>
-      <td class="td-kho">${fmt(r.ton_bn)}</td>
-      <td class="td-kho">${fmt(r.ton_1003)}</td>
-      <td class="td-kho">${fmt(r.ton_others)}</td>
-      <td>${fmt(r.tong_ton_va_duong)}</td>
-      <td>${fmt(r.tong_sl_thang)}</td>
-      <td>${fmt(r.sl_shopee)}</td>
-      <td>${fmt(r.sl_tiktok)}</td>
-      <td>${fmt(r.sl_si)}</td>
-      <td>${fmtDec(r.avg_sl_thang)}</td>
+      <td>${cellN(r.ton_1013,   'n-1013')}</td>
+      <td>${cellN(r.ton_others, 'n-others')}</td>
+      <td>${cellN(r.ton_bn,     'n-bn')}</td>
+      <td>${cellN(r.ton_1003,   'n-1003')}</td>
+      <td>${cellN(r.tong_ton_va_duong, 'n-total')}</td>
+      <td>${cellN(r.tong_sl_thang,     'n-sl')}</td>
+      <td>${cellN(r.sl_shopee,  'n')}</td>
+      <td>${cellN(r.sl_tiktok,  'n')}</td>
+      <td>${cellN(r.sl_si,      'n')}</td>
+      <td>${cellDec(r.avg_sl_thang)}</td>
+      <td>${cellN(r.tong_sl_ban,'n')}</td>
+      <td>${cellBanHet(r)}</td>
       <td>${BADGE[s]}</td>
     </tr>`;
   }).join('') + (data.length > 500
-    ? `<tr class="more-row"><td colspan="11">Hiển thị 500 / ${data.length.toLocaleString('vi-VN')} SKU — dùng bộ lọc để thu hẹp</td></tr>`
+    ? `<tr class="more-row"><td colspan="14">Hiển thị 500 / ${data.length.toLocaleString('vi-VN')} SKU — dùng bộ lọc để thu hẹp</td></tr>`
     : '');
 }
 
-// Load ngay khi mở trang
 loadData();
 </script>
 </body>

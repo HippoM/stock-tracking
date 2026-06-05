@@ -202,6 +202,8 @@ td:first-child{text-align:left;}
 <table>
   <thead><tr>
     <th class="" style="min-width:130px;">SKU</th>
+    <th style="min-width:130px;">Tồn kho hiện tại </th>
+    <th style="min-width:130px;">Hàng đi đường</th>
     <th class="th-1013" style="min-width:110px;">Tồn kho 1013</th>
     <th class="th-others" style="min-width:140px;">Tồn kho Khác (Others)</th>
     <th class="th-bn" style="min-width:110px;">Tồn kho BN</th>
@@ -217,7 +219,7 @@ td:first-child{text-align:left;}
     <th style="min-width:110px;">Trạng thái</th>
   </tr></thead>
   <tbody id="tbody">
-    <tr><td colspan="14"><div class="empty-state"><div class="big"><span class="spin">↺</span></div>Đang kết nối Supabase...</div></td></tr>
+    <tr><td colspan="16"><div class="empty-state"><div class="big"><span class="spin">↺</span></div>Đang kết nối Supabase...</div></td></tr>
   </tbody>
 </table>
 </div>
@@ -233,16 +235,16 @@ let D=[];
 const n=v=>{const x=parseFloat(v);return isNaN(x)?0:x;};
 
 function banHet(r){
-  const tot=n(r.ton_1013)+n(r.ton_others)+n(r.ton_bn)+n(r.ton_1003);
-  if(tot<=0)return null;
-  const avg=n(r.avg_sl_thang);
-  if(avg<=0)return Infinity;
-  return n(r.tong_ton_va_duong)/avg;
+  const t2c=n(r.ton_hien_tai)+n(r.hang_di_duong);
+  if(t2c<=0)return null;
+  const sl=n(r.tong_sl_thang);
+  if(sl<=0)return Infinity;
+  return t2c/sl;
 }
 function status(r){
-  const tot=n(r.ton_1013)+n(r.ton_others)+n(r.ton_bn)+n(r.ton_1003);
-  if(tot<=0)return'zero';
+  const t2c=n(r.ton_hien_tai)+n(r.hang_di_duong);
   if(n(r.tong_ton_va_duong)<0)return'check';   // âm → cần kiểm tra data
+  if(t2c<=0)return'zero';
   const bh=banHet(r);
   if(bh===Infinity||bh>3)return'critical';
   if(bh>1)return'warn';
@@ -265,8 +267,9 @@ function cd(v){
   return`<span class="n">${x.toFixed(1)}</span>`;
 }
 function cbh(r){
-  const tot=n(r.ton_1013)+n(r.ton_others)+n(r.ton_bn)+n(r.ton_1003);
-  if(tot<=0)return'<span class="n0">Hết hàng</span>';
+  if(n(r.tong_ton_va_duong)<0)return'<span style="color:var(--red);font-family:var(--mono);">⚠ Âm</span>';
+  const t2c=n(r.ton_hien_tai)+n(r.hang_di_duong);
+  if(t2c<=0)return'<span class="n0">—</span>';
   const bh=banHet(r);
   if(bh===Infinity)return'<span class="n0">—</span>';
   if(bh<=1)return`<span class="n-ok">${bh.toFixed(2)}</span>`;
@@ -304,7 +307,7 @@ async function loadData(){
     updateStats();renderTable();
   }catch(e){
     document.getElementById('last-updated').textContent='⚠ '+e.message;
-    document.getElementById('tbody').innerHTML=`<tr><td colspan="14"><div class="empty-state"><div class="big">⚠</div>${e.message}</div></td></tr>`;
+    document.getElementById('tbody').innerHTML=`<tr><td colspan="16"><div class="empty-state"><div class="big">⚠</div>${e.message}</div></td></tr>`;
   }finally{btn.classList.remove('loading');ri.classList.remove('spin');ri.textContent='↺';}
 }
 
@@ -352,13 +355,15 @@ function renderTable(){
   document.getElementById('row-count').textContent=data.length.toLocaleString('vi-VN')+' SKU';
   const tbody=document.getElementById('tbody');
   if(!data.length){
-    tbody.innerHTML='<tr><td colspan="14"><div class="empty-state"><div class="big">🔍</div>Không tìm thấy SKU nào</div></td></tr>';
+    tbody.innerHTML='<tr><td colspan="16"><div class="empty-state"><div class="big">🔍</div>Không tìm thấy SKU nào</div></td></tr>';
     return;
   }
   tbody.innerHTML=data.slice(0,500).map(r=>{
     const s=status(r);
     return`<tr class="${s==='critical'?'row-critical':s==='warn'?'row-warn':s==='check'?'row-check':''}">
       <td>${r.sku}</td>
+      <td>${cn(r.ton_hien_tai,'n-tot')}</td>
+      <td>${cn(r.hang_di_duong,'n')}</td>
       <td>${cn(r.ton_1013,'n-1013')}</td>
       <td>${cn(r.ton_others,'n-oth')}</td>
       <td>${cn(r.ton_bn,'n-bn')}</td>
@@ -373,7 +378,7 @@ function renderTable(){
       <td>${cbh(r)}</td>
       <td>${BADGE[s]}</td>
     </tr>`;
-  }).join('')+(data.length>500?`<tr class="more-row"><td colspan="14">Hiển thị 500/${data.length.toLocaleString('vi-VN')} SKU — dùng bộ lọc</td></tr>`:'');
+  }).join('')+(data.length>500?`<tr class="more-row"><td colspan="16">Hiển thị 500/${data.length.toLocaleString('vi-VN')} SKU — dùng bộ lọc</td></tr>`:'');
 }
 loadData();
 </script>

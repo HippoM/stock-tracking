@@ -38,6 +38,7 @@
   .stats-row {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
     gap: 1px; background: var(--border); border-bottom: 1px solid var(--border);
+    position: sticky; top: 53px; z-index: 90;
   }
   .stat-card { background: var(--bg); padding: 16px 20px; }
   .stat-label { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
@@ -49,6 +50,7 @@
     display: flex; align-items: center; gap: 8px;
     padding: 12px 24px; border-bottom: 1px solid var(--border);
     background: var(--bg2); flex-wrap: wrap;
+    position: sticky; top: 233px; z-index: 90;
   }
   input[type="text"], select {
     background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px;
@@ -63,30 +65,15 @@
 
   .table-wrap { overflow-x: auto; padding: 0 24px 48px; }
 
-  /* Freeze cột SKU + 4 cột tồn */
-  thead th:nth-child(1), tbody td:nth-child(1) { position: sticky; left: 0; z-index: 2; background: var(--bg); }
-  thead th:nth-child(2), tbody td:nth-child(2) { position: sticky; left: 120px; z-index: 2; background: var(--bg); }
-  thead th:nth-child(3), tbody td:nth-child(3) { position: sticky; left: 220px; z-index: 2; background: var(--bg); }
-  thead th:nth-child(4), tbody td:nth-child(4) { position: sticky; left: 350px; z-index: 2; background: var(--bg); }
-  thead th:nth-child(5), tbody td:nth-child(5) { position: sticky; left: 450px; z-index: 2; background: var(--bg); }
-  tbody tr:hover td:nth-child(1),
-  tbody tr:hover td:nth-child(2),
-  tbody tr:hover td:nth-child(3),
-  tbody tr:hover td:nth-child(4),
-  tbody tr:hover td:nth-child(5) { background: var(--bg2); }
-  tbody tr.row-critical td:nth-child(1),
-  tbody tr.row-critical td:nth-child(2),
-  tbody tr.row-critical td:nth-child(3),
-  tbody tr.row-critical td:nth-child(4),
-  tbody tr.row-critical td:nth-child(5) { background: var(--bg); }
-  thead th { z-index: 1; }
-  thead th:nth-child(1),
-  thead th:nth-child(2),
-  thead th:nth-child(3),
-  thead th:nth-child(4),
-  thead th:nth-child(5) { z-index: 3; }
+  /* Freeze cột SKU */
+  thead th:nth-child(1) { position: sticky; left: 0; z-index: 3; background: var(--bg); box-shadow: 2px 0 6px rgba(0,0,0,0.4); }
+  tbody td:nth-child(1) { position: sticky; left: 0; z-index: 1; background: var(--bg); box-shadow: 2px 0 6px rgba(0,0,0,0.4); }
+  tbody tr:hover td:nth-child(1)    { background: var(--bg2); }
+  tbody tr.row-critical td:nth-child(1) { background: #180f0f; }
+  tbody tr.row-warn td:nth-child(1)     { background: #151208; }
   table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
   thead tr { border-bottom: 1px solid var(--border2); }
+  thead { position: sticky; top: 293px; z-index: 89; background: var(--bg); }
   th {
     font-size: 11px; font-weight: 600; color: var(--text3);
     text-transform: uppercase; letter-spacing: 0.05em;
@@ -184,19 +171,19 @@
     <div class="stat-sub" id="stat-1003b-sku"></div>
   </div>
   <div class="stat-card">
-    <div class="stat-label">🔴 Khẩn &lt; 1 tháng</div>
+    <div class="stat-label">🔴 Cần đẩy &gt; 3 tháng</div>
     <div class="stat-value c-red" id="stat-critical">—</div>
-    <div class="stat-sub">Cần đẩy ngay</div>
+    <div class="stat-sub">Tồn cao, bán chậm</div>
   </div>
   <div class="stat-card">
-    <div class="stat-label">⚠ Chú ý 1–3 tháng</div>
+    <div class="stat-label">🟡 Bình thường 1–3 tháng</div>
     <div class="stat-value c-warn" id="stat-warn">—</div>
-    <div class="stat-sub">Theo dõi thêm</div>
+    <div class="stat-sub">Đang ổn</div>
   </div>
   <div class="stat-card">
-    <div class="stat-label">✓ Bình thường</div>
+    <div class="stat-label">✓ Tốt ≤ 1 tháng</div>
     <div class="stat-value c-green" id="stat-ok">—</div>
-    <div class="stat-sub">&gt; 3 tháng</div>
+    <div class="stat-sub">Bán nhanh, quay vòng tốt</div>
   </div>
 </div>
 
@@ -204,9 +191,9 @@
   <input type="text" id="search-sku" placeholder="🔍 Tìm SKU..." oninput="renderTable()" />
   <select id="filter-status" onchange="renderTable()">
     <option value="all">Tất cả trạng thái</option>
-    <option value="critical">🔴 Khẩn — bán hết &lt; 1 tháng</option>
-    <option value="warn">⚠ Chú ý — 1–3 tháng</option>
-    <option value="ok">✓ Bình thường</option>
+    <option value="critical">🔴 Cần đẩy — &gt; 3 tháng</option>
+    <option value="warn">🟡 Bình thường — 1–3 tháng</option>
+    <option value="ok">✓ Tốt — ≤ 1 tháng</option>
     <option value="zero">Hết cả 4 kho</option>
   </select>
   <select id="filter-kho" onchange="renderTable()">
@@ -256,9 +243,9 @@
 </div>
 <div class="footnote">
   <b>Bán hết sau</b> = Tổng Tồn + Hàng đi đường ÷ AVG SL/Tháng &nbsp;|&nbsp;
-  🔴 <b>Khẩn</b>: &lt; 1 tháng (hoặc có tồn nhưng AVG = 0) &nbsp;|&nbsp;
-  ⚠ <b>Chú ý</b>: 1–3 tháng &nbsp;|&nbsp;
-  ✓ <b>Bình thường</b>: &gt; 3 tháng
+  ✓ <b>Tốt</b>: ≤ 1 tháng (bán nhanh) &nbsp;|&nbsp;
+  🟡 <b>Bình thường</b>: 1–3 tháng &nbsp;|&nbsp;
+  🔴 <b>Cần đẩy</b>: &gt; 3 tháng hoặc AVG = 0
 </div>
 
 <script>
@@ -277,9 +264,10 @@ function getStatus(r) {
   const tonTotal = n(r.ton_1013) + n(r.ton_others) + n(r.ton_bn) + n(r.ton_1003);
   if (tonTotal <= 0) return 'zero';
   const bh = banHet(r);
-  if (bh === Infinity || bh < 1) return 'critical';
-  if (bh <= 3) return 'warn';
-  return 'ok';
+  if (bh === Infinity) return 'critical';   // có tồn nhưng AVG = 0 → không rõ bao giờ hết
+  if (bh <= 1) return 'ok';                 // bán nhanh, quay vòng tốt
+  if (bh <= 3) return 'warn';               // bình thường
+  return 'critical';                        // > 3 tháng → cần đẩy
 }
 
 function cellN(v, cls) {
@@ -299,15 +287,15 @@ function cellBanHet(r) {
   if (tonTotal <= 0) return '<span class="n-zero">Hết hàng</span>';
   const bh = banHet(r);
   if (bh === Infinity) return '<span class="n-zero">—</span>';
-  if (bh < 1)  return `<span class="n-red">${bh.toFixed(1)}</span>`;
+  if (bh <= 1) return `<span class="n-ok">${bh.toFixed(1)}</span>`;
   if (bh <= 3) return `<span class="n-warnc">${bh.toFixed(1)}</span>`;
-  return `<span class="n-ok">${bh.toFixed(1)}</span>`;
+  return `<span class="n-red">${bh.toFixed(1)}</span>`;
 }
 
 const BADGE = {
-  critical: '<span class="badge badge-critical">🔴 Khẩn</span>',
-  warn:     '<span class="badge badge-warn">⚠ Chú ý</span>',
-  ok:       '<span class="badge badge-ok">✓ Ổn</span>',
+  critical: '<span class="badge badge-critical">🔴 Cần đẩy</span>',
+  warn:     '<span class="badge badge-warn">🟡 Bình thường</span>',
+  ok:       '<span class="badge badge-ok">✓ Tốt</span>',
   zero:     '<span class="badge badge-zero">Hết hàng</span>',
 };
 

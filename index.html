@@ -248,6 +248,12 @@ function cn(v,cls){
   if(x===0)return'<span class="n0">0</span>';
   return`<span class="${cls}">${Math.round(x).toLocaleString('vi-VN')}</span>`;
 }
+function cnTot(v){
+  const x=n(v);
+  if(x<0)return`<span style="font-family:var(--mono);color:var(--red);font-weight:600;">${Math.round(x).toLocaleString('vi-VN')} ⚠</span>`;
+  if(x===0)return'<span class="n0">0</span>';
+  return`<span class="n-tot">${Math.round(x).toLocaleString('vi-VN')}</span>`;
+}
 function cd(v){
   const x=n(v);
   if(x===0)return'<span class="n0">—</span>';
@@ -351,7 +357,7 @@ function renderTable(){
       <td>${cn(r.ton_others,'n-oth')}</td>
       <td>${cn(r.ton_bn,'n-bn')}</td>
       <td>${cn(r.ton_1003,'n-1003')}</td>
-      <td>${cn(r.tong_ton_va_duong,'n-tot')}</td>
+      <td>${cnTot(r.tong_ton_va_duong)}</td>
       <td>${cn(r.tong_sl_thang,'n-sl')}</td>
       <td>${cn(r.sl_shopee,'n')}</td>
       <td>${cn(r.sl_tiktok,'n')}</td>

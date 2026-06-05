@@ -333,19 +333,22 @@ function renderChecklist(){
   const list=document.getElementById('fp-list');
   const vals=getUniqueVals(activeCol);
   const selected=pendingChecks[activeCol]||new Set();
-  list.innerHTML=vals
-    .filter(([v])=>!search||v.toLowerCase().includes(search))
-    .map(([v,cnt])=>{
-      const chk=selected.size===0||selected.has(v);
-      const id='fp-'+btoa(encodeURIComponent(v)).slice(0,8)+Math.random().toString(36).slice(2,5);
-      return`<div class="fp-item">
-        <input type="checkbox" id="${id}" ${chk?'checked':''} onchange="toggleCheck('${v.replace(/'/g,'\\'')}',this.checked)"/>
-        <label for="${id}">${v}</label>
-        <span class="fp-item-count">${cnt}</span>
-      </div>`;
-    }).join('');
+  list.innerHTML='';
+  vals.filter(([v])=>!search||v.toLowerCase().includes(search)).forEach(([v,cnt])=>{
+    const chk=selected.size===0||selected.has(v);
+    const div=document.createElement('div');
+    div.className='fp-item';
+    const cb=document.createElement('input');
+    cb.type='checkbox';cb.checked=chk;
+    cb.addEventListener('change',function(){toggleCheck(v,this.checked);});
+    const lbl=document.createElement('label');lbl.textContent=v;
+    const sp=document.createElement('span');sp.className='fp-item-count';sp.textContent=cnt;
+    div.appendChild(cb);div.appendChild(lbl);div.appendChild(sp);
+    list.appendChild(div);
+  });
 }
 
+function toggleCheckEncoded(encoded,checked){toggleCheck(decodeURIComponent(encoded),checked);}
 function toggleCheck(val,checked){
   if(!pendingChecks[activeCol])pendingChecks[activeCol]=new Set();
   const s=pendingChecks[activeCol];

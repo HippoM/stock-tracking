@@ -88,24 +88,34 @@ thead th:hover .filter-btn{opacity:0.8;}
 .filter-panel{
   position:fixed;z-index:1000;
   background:var(--bg2);border:1px solid var(--border2);
-  border-radius:10px;padding:12px;
+  border-radius:10px;
   box-shadow:0 8px 32px rgba(0,0,0,0.4);
-  min-width:200px;
-  display:none;
+  min-width:220px;max-width:280px;
+  display:none;overflow:hidden;
 }
-.filter-panel.open{display:block;}
-.filter-panel label{font-size:11px;color:var(--text3);display:block;margin-bottom:5px;}
-.filter-panel input,.filter-panel select{
-  width:100%;background:var(--bg3);border:1px solid var(--border2);
-  border-radius:6px;color:var(--text);font-family:var(--mono);
-  font-size:12px;padding:6px 9px;outline:none;
-}
-.filter-panel input:focus,.filter-panel select:focus{border-color:var(--blue);}
-.filter-panel select option{background:var(--bg3);}
-.filter-panel-btns{display:flex;gap:6px;margin-top:10px;}
-.fp-btn{flex:1;padding:5px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;}
-.fp-btn:hover{border-color:var(--accent);color:var(--accent);}
-.fp-btn.clear{color:var(--text3);}
+.filter-panel.open{display:flex;flex-direction:column;}
+.fp-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 6px;border-bottom:1px solid var(--border);}
+.fp-head span{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.fp-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;}
+.fp-close:hover{color:var(--text);}
+.fp-search-wrap{padding:8px 10px 4px;}
+.fp-search{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:var(--inter);font-size:12px;padding:5px 9px;outline:none;}
+.fp-search:focus{border-color:var(--blue);}
+.fp-search::placeholder{color:var(--text3);}
+.fp-actions{display:flex;gap:6px;padding:4px 10px;}
+.fp-act{font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;padding:2px 0;opacity:.8;}
+.fp-act:hover{opacity:1;}
+.fp-list{max-height:220px;overflow-y:auto;padding:4px 0;}
+.fp-item{display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;transition:background .1s;}
+.fp-item:hover{background:var(--bg3);}
+.fp-item input[type=checkbox]{accent-color:var(--blue);width:13px;height:13px;cursor:pointer;}
+.fp-item label{font-family:var(--mono);font-size:12px;color:var(--text2);cursor:pointer;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fp-item-count{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.fp-footer{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--border);}
+.fp-btn-clear{flex:1;padding:6px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;transition:all .15s;}
+.fp-btn-clear:hover{border-color:var(--red);color:var(--red);}
+.fp-btn-apply{flex:1;padding:6px;border-radius:6px;border:none;background:var(--blue);color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.fp-btn-apply:hover{opacity:.85;}
 
 /* Colors */
 .th-1013{color:var(--purple)!important;}.th-others{color:var(--orange)!important;}
@@ -157,21 +167,23 @@ td:last-child{padding-right:24px;}
   const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6ZGJ1cWV2Znlpcmdmamt3a2hiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NTA0ODYsImV4cCI6MjA5NjEyNjQ4Nn0.WfeUan3Q2fIeIMWk6YoMurj66nQqXyn5JeqHCeN4jRY";
 </script>
 
-<!-- Filter panel (shared, moved by JS) -->
+<!-- Excel-style filter panel -->
 <div class="filter-panel" id="filter-panel">
-  <label id="fp-label">Filter</label>
-  <input type="text" id="fp-text" placeholder="" style="display:none" oninput="applyColFilter()"/>
-  <select id="fp-select" style="display:none" onchange="applyColFilter()">
-    <option value="">Tất cả</option>
-    <option value="critical">🔴 Cần đẩy</option>
-    <option value="warn">🟡 Bình thường</option>
-    <option value="ok">✓ Tốt</option>
-    <option value="zero">Hết hàng</option>
-    <option value="check">⚠ Check</option>
-  </select>
-  <div class="filter-panel-btns">
-    <button class="fp-btn clear" onclick="clearColFilter()">✕ Xoá</button>
-    <button class="fp-btn" onclick="closePanel()">Đóng</button>
+  <div class="fp-head">
+    <span id="fp-label">Filter</span>
+    <button class="fp-close" onclick="closePanel()">✕</button>
+  </div>
+  <div class="fp-search-wrap">
+    <input type="text" class="fp-search" id="fp-search" placeholder="🔍 Tìm..." oninput="renderChecklist()"/>
+  </div>
+  <div class="fp-actions">
+    <button class="fp-act" onclick="checkAll()">Chọn tất cả</button>
+    <button class="fp-act" onclick="uncheckAll()">Bỏ chọn</button>
+  </div>
+  <div class="fp-list" id="fp-list"></div>
+  <div class="fp-footer">
+    <button class="fp-btn-clear" onclick="clearColFilter()">✕ Xoá filter</button>
+    <button class="fp-btn-apply" onclick="applyChecklist()">Áp dụng</button>
   </div>
 </div>
 
@@ -290,38 +302,100 @@ const BADGE={
 };
 
 // ── FILTER PANEL ──────────────────────────────────────────
+let pendingChecks={};  // temp state before Apply
+
+function getUniqueVals(col){
+  const vals={};
+  D.forEach(r=>{
+    let v;
+    if(col==='status')v=status(r);
+    else if(col==='ban_het'){
+      const bh=banHet(r);
+      if(bh===null)v='Hết hàng';
+      else if(bh===Infinity)v='—';
+      else v=String(Math.round(bh*100)/100);
+    } else {
+      const x=n(r[col]);
+      v=x===0?'0':Math.round(x).toLocaleString('vi-VN');
+    }
+    vals[v]=(vals[v]||0)+1;
+  });
+  // Sort: numbers asc, strings alpha
+  return Object.entries(vals).sort((a,b)=>{
+    const na=parseFloat(a[0].replace(/[^0-9.-]/g,'')),nb=parseFloat(b[0].replace(/[^0-9.-]/g,''));
+    if(!isNaN(na)&&!isNaN(nb))return na-nb;
+    return a[0].localeCompare(b[0]);
+  });
+}
+
+function renderChecklist(){
+  const search=document.getElementById('fp-search').value.toLowerCase();
+  const list=document.getElementById('fp-list');
+  const vals=getUniqueVals(activeCol);
+  const selected=pendingChecks[activeCol]||new Set();
+  list.innerHTML=vals
+    .filter(([v])=>!search||v.toLowerCase().includes(search))
+    .map(([v,cnt])=>{
+      const chk=selected.size===0||selected.has(v);
+      const id='fp-'+btoa(encodeURIComponent(v)).slice(0,8)+Math.random().toString(36).slice(2,5);
+      return`<div class="fp-item">
+        <input type="checkbox" id="${id}" ${chk?'checked':''} onchange="toggleCheck('${v.replace(/'/g,'\\'')}',this.checked)"/>
+        <label for="${id}">${v}</label>
+        <span class="fp-item-count">${cnt}</span>
+      </div>`;
+    }).join('');
+}
+
+function toggleCheck(val,checked){
+  if(!pendingChecks[activeCol])pendingChecks[activeCol]=new Set();
+  const s=pendingChecks[activeCol];
+  if(checked)s.add(val);else s.delete(val);
+}
+
+function checkAll(){
+  pendingChecks[activeCol]=new Set();
+  renderChecklist();
+}
+function uncheckAll(){
+  const vals=getUniqueVals(activeCol);
+  pendingChecks[activeCol]=new Set();// empty = will block all
+  document.getElementById('fp-list').querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=false);
+}
+
+function applyChecklist(){
+  const s=pendingChecks[activeCol];
+  if(!s||s.size===0){
+    delete CF[activeCol];
+  } else {
+    // Check if all selected = no filter
+    const total=getUniqueVals(activeCol).length;
+    if(s.size>=total)delete CF[activeCol];
+    else CF[activeCol]=new Set(s);
+  }
+  updateFilterBtns();
+  renderTable();
+  closePanel();
+}
+
 function openPanel(col,type,btn){
   if(activeCol===col){closePanel();return;}
   activeCol=col;
   const panel=document.getElementById('filter-panel');
-  const txt=document.getElementById('fp-text');
-  const sel=document.getElementById('fp-select');
-  const lbl=document.getElementById('fp-label');
-
-  // Label
   const th=document.querySelector(`[data-col="${col}"]`);
-  lbl.textContent=(th?th.innerText.replace('▾','').trim():col);
+  document.getElementById('fp-label').textContent=(th?th.innerText.replace('▾','').trim():col);
+  document.getElementById('fp-search').value='';
 
-  // Show correct input
-  if(type==='select'){
-    txt.style.display='none';sel.style.display='block';
-    sel.value=CF[col]||'';
-  } else if(type==='text'){
-    sel.style.display='none';txt.style.display='block';
-    txt.placeholder='Tìm...';
-    txt.value=CF[col]||'';
-  } else {
-    sel.style.display='none';txt.style.display='block';
-    txt.placeholder='≥ số ...';
-    txt.value=CF[col]||'';
-  }
+  // Init pending from current CF
+  if(CF[col] instanceof Set)pendingChecks[col]=new Set(CF[col]);
+  else pendingChecks[col]=new Set();
 
-  // Position panel near button
+  renderChecklist();
+
   const rect=btn.getBoundingClientRect();
   panel.style.top=(rect.bottom+6)+'px';
-  panel.style.left=Math.min(rect.left,window.innerWidth-220)+'px';
+  panel.style.left=Math.min(rect.left,window.innerWidth-240)+'px';
   panel.classList.add('open');
-  setTimeout(()=>{type==='select'?sel.focus():txt.focus();},50);
+  document.getElementById('fp-search').focus();
 }
 
 function closePanel(){
@@ -330,25 +404,12 @@ function closePanel(){
   updateFilterBtns();
 }
 
-function applyColFilter(){
-  if(!activeCol)return;
-  const th=document.querySelector(`[data-col="${activeCol}"]`);
-  const type=th?th.dataset.type:'num';
-  const val=type==='select'
-    ?document.getElementById('fp-select').value
-    :document.getElementById('fp-text').value.trim();
-  if(val===''||val===null)delete CF[activeCol];
-  else CF[activeCol]=val;
-  updateFilterBtns();
-  renderTable();
-}
-
 function clearColFilter(){
   delete CF[activeCol];
-  document.getElementById('fp-text').value='';
-  document.getElementById('fp-select').value='';
+  delete pendingChecks[activeCol];
   updateFilterBtns();
   renderTable();
+  closePanel();
 }
 
 function updateFilterBtns(){
@@ -426,17 +487,14 @@ function renderTable(){
     if(search&&!r.sku.toLowerCase().includes(search))return false;
     // Column filters
     for(const[col,val]of Object.entries(CF)){
-      if(!val&&val!==0)continue;
-      if(col==='sku'){if(!r.sku.toLowerCase().includes(val.toLowerCase()))return false;}
-      else if(col==='status'){if(status(r)!==val)return false;}
-      else if(col==='ban_het'){
-        const bh=banHet(r);
-        const v=parseFloat(val);
-        if(isNaN(v))continue;
-        if(bh===null||bh===Infinity||bh>v)return false;
-      } else {
-        const v=parseFloat(val);
-        if(!isNaN(v)&&n(r[col])<v)return false;
+      if(!val)continue;
+      const getDisplayVal=(col,r)=>{
+        if(col==='status')return status(r);
+        if(col==='ban_het'){const bh=banHet(r);if(bh===null)return'Hết hàng';if(bh===Infinity)return'—';return String(Math.round(bh*100)/100);}
+        const x=n(r[col]);return x===0?'0':Math.round(x).toLocaleString('vi-VN');
+      };
+      if(val instanceof Set){
+        if(!val.has(getDisplayVal(col,r)))return false;
       }
     }
     return true;

@@ -121,6 +121,7 @@ td:first-child{text-align:left;}
 .n-tot{font-family:var(--mono);color:var(--warn);font-weight:600;}
 .n-sl{font-family:var(--mono);color:var(--accent);font-weight:600;}
 .n-red{font-family:var(--mono);color:var(--red);}
+.n-sub{font-family:var(--mono);color:#94a3b8;}
 .n-wrn{font-family:var(--mono);color:var(--warn);}
 .n-ok{font-family:var(--mono);color:var(--accent);}
 
@@ -202,13 +203,13 @@ td:first-child{text-align:left;}
 <table>
   <thead><tr>
     <th class="" style="min-width:130px;">SKU</th>
-    <th style="min-width:130px;">Tồn kho hiện tại </th>
-    <th style="min-width:130px;">Hàng đi đường</th>
     <th class="th-1013" style="min-width:110px;">Tồn kho 1013</th>
     <th class="th-others" style="min-width:140px;">Tồn kho Khác (Others)</th>
     <th class="th-bn" style="min-width:110px;">Tồn kho BN</th>
     <th class="th-1003" style="min-width:110px;">Tồn kho 1003</th>
     <th class="th-total" style="min-width:170px;">Tổng Tồn + Hàng đi đường</th>
+    <th style="min-width:130px;color:#94a3b8;">Tồn kho hiện tại </th>
+    <th style="min-width:130px;color:#94a3b8;">Hàng đi đường</th>
     <th class="th-sl" style="min-width:170px;">Tổng sản lượng 1 tháng</th>
     <th style="min-width:170px;">Sản lượng 1 tháng Shopee</th>
     <th style="min-width:170px;">Sản lượng 1 tháng Tiktok</th>
@@ -362,14 +363,14 @@ function renderTable(){
     const s=status(r);
     return`<tr class="${s==='critical'?'row-critical':s==='warn'?'row-warn':s==='check'?'row-check':''}">
       <td>${r.sku}</td>
-      <td>${cn(r.ton_hien_tai,'n-tot')}</td>
-      <td>${cn(r.hang_di_duong,'n')}</td>
       <td>${cn(r.ton_1013,'n-1013')}</td>
       <td>${cn(r.ton_others,'n-oth')}</td>
       <td>${cn(r.ton_bn,'n-bn')}</td>
       <td>${cn(r.ton_1003,'n-1003')}</td>
       <td>${cnTot(r.tong_ton_va_duong)}</td>
       <td>${cn(r.tong_sl_thang,'n-sl')}</td>
+      <td>${cn(r.ton_hien_tai,'n-sub')}</td>
+      <td>${cn(r.hang_di_duong,'n-sub')}</td>
       <td>${cn(r.sl_shopee,'n')}</td>
       <td>${cn(r.sl_tiktok,'n')}</td>
       <td>${cn(r.sl_si,'n')}</td>

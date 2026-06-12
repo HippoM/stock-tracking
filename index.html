@@ -307,11 +307,19 @@ let listSortDir={};  // per-column: 'asc'|'desc'|null (default) - for checklist 
 let activeSortCol=null;  // column currently sorting the table
 let activeSortDir='asc'; // 'asc' or 'desc'
 
+const STATUS_LABEL={
+  critical:'🔴 Cần đẩy',
+  warn:'🟡 Bình thường',
+  ok:'✓ Tốt',
+  zero:'Hết hàng',
+  check:'⚠ Check',
+};
+
 function getUniqueVals(col){
   const vals={};
   D.forEach(r=>{
     let v;
-    if(col==='status')v=status(r);
+    if(col==='status')v=STATUS_LABEL[status(r)];
     else if(col==='ban_het'){
       const bh=banHet(r);
       if(bh===null)v='Hết hàng';
@@ -549,7 +557,7 @@ function renderTable(){
     for(const[col,val]of Object.entries(CF)){
       if(!val)continue;
       const getDisplayVal=(col,r)=>{
-        if(col==='status')return status(r);
+        if(col==='status')return STATUS_LABEL[status(r)];
         if(col==='ban_het'){const bh=banHet(r);if(bh===null)return'Hết hàng';if(bh===Infinity)return'—';return String(Math.round(bh*100)/100);}
         const x=n(r[col]);return x===0?'0':Math.round(x).toLocaleString('vi-VN');
       };
@@ -615,7 +623,7 @@ function exportData(){
     for(const[col,val]of Object.entries(CF)){
       if(!val)continue;
       const getDisplayVal=(col,r)=>{
-        if(col==='status')return status(r);
+        if(col==='status')return STATUS_LABEL[status(r)];
         if(col==='ban_het'){const bh=banHet(r);if(bh===null)return'Hết hàng';if(bh===Infinity)return'—';return String(Math.round(bh*100)/100);}
         if(col==='sku')return r.sku;
         const x=n(r[col]);return x===0?'0':Math.round(x).toLocaleString('vi-VN');

@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Inventory Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -83,6 +84,7 @@ thead th:first-child .th-inner{justify-content:flex-start;}
 }
 thead th:hover .filter-btn{opacity:0.8;}
 .filter-btn.active{opacity:1;color:var(--blue);}
+.filter-btn.sort-active{opacity:1;color:var(--accent);font-weight:700;}
 
 /* Dropdown panel */
 .filter-panel{
@@ -103,7 +105,8 @@ thead th:hover .filter-btn{opacity:0.8;}
 .fp-search:focus{border-color:var(--blue);}
 .fp-search::placeholder{color:var(--text3);}
 .fp-actions{display:flex;gap:6px;padding:4px 10px;}
-.fp-act{font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;padding:2px 0;opacity:.8;}
+.fp-act{font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;padding:2px 6px;opacity:.8;border-radius:4px;}
+.fp-act.active{opacity:1;background:rgba(96,165,250,.15);font-weight:600;}
 .fp-act:hover{opacity:1;}
 .fp-list{max-height:220px;overflow-y:auto;padding:4px 0;}
 .fp-item{display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;transition:background .1s;}
@@ -179,6 +182,9 @@ td:last-child{padding-right:24px;}
   <div class="fp-actions">
     <button class="fp-act" onclick="checkAll()">Chọn tất cả</button>
     <button class="fp-act" onclick="uncheckAll()">Bỏ chọn</button>
+    <span style="flex:1"></span>
+    <button class="fp-act" id="fp-sort-az" onclick="setListSort('asc')" title="Sắp xếp A→Z / nhỏ→lớn">A→Z</button>
+    <button class="fp-act" id="fp-sort-za" onclick="setListSort('desc')" title="Sắp xếp Z→A / lớn→nhỏ">Z→A</button>
   </div>
   <div class="fp-list" id="fp-list"></div>
   <div class="fp-footer">
@@ -193,9 +199,12 @@ td:last-child{padding-right:24px;}
     <div class="dv"></div>
     <span id="last-updated">Đang tải...</span>
   </div>
-  <button class="btn-refresh" id="btn-refresh" onclick="loadData()">
-    <span id="ri">↺</span> Refresh
-  </button>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-refresh" onclick="exportData()">⬇ Export Excel</button>
+    <button class="btn-refresh" id="btn-refresh" onclick="loadData()">
+      <span id="ri">↺</span> Refresh
+    </button>
+  </div>
 </header>
 
 <div class="stats-row">
@@ -210,18 +219,9 @@ td:last-child{padding-right:24px;}
 </div>
 
 <div class="toolbar">
-  <input type="text" id="search-sku" placeholder="🔍 Tìm SKU..." oninput="renderTable()"/>
-  <select id="f-sort" onchange="renderTable()">
-    <option value="ban_het">Thời gian bán hết Tồn ↑</option>
-    <option value="ton_1013">Tồn 1013 ↓</option>
-    <option value="ton_others">Tồn Others ↓</option>
-    <option value="ton_bn">Tồn BN ↓</option>
-    <option value="ton_1003">Tồn 1003 ↓</option>
-    <option value="tong_ton_va_duong">Tổng Tồn+đường ↓</option>
-    <option value="avg_sl_thang">AVG SL/Tháng ↓</option>
-    <option value="tong_sl_ban">Tong SL ban ↓</option>
-  </select>
-  <span class="row-count" id="row-count"></span>
+  <input type="text" id="search-sku" placeholder="🔍 Tìm SKU..." oninput="renderTable()" style="min-width:180px;"/>
+
+<span class="row-count" id="row-count"></span>
 </div>
 
 <div class="table-wrap" onclick="handleOutsideClick(event)">
@@ -303,6 +303,9 @@ const BADGE={
 
 // ── FILTER PANEL ──────────────────────────────────────────
 let pendingChecks={};  // temp state before Apply
+let listSortDir={};  // per-column: 'asc'|'desc'|null (default) - for checklist display
+let activeSortCol=null;  // column currently sorting the table
+let activeSortDir='asc'; // 'asc' or 'desc'
 
 function getUniqueVals(col){
   const vals={};
@@ -314,18 +317,72 @@ function getUniqueVals(col){
       if(bh===null)v='Hết hàng';
       else if(bh===Infinity)v='—';
       else v=String(Math.round(bh*100)/100);
+    } else if(col==='sku'){
+      v=r.sku;
     } else {
       const x=n(r[col]);
       v=x===0?'0':Math.round(x).toLocaleString('vi-VN');
     }
     vals[v]=(vals[v]||0)+1;
   });
-  // Sort: numbers asc, strings alpha
-  return Object.entries(vals).sort((a,b)=>{
+  const dir=listSortDir[col];
+  const entries=Object.entries(vals);
+  if(dir==='desc'){
+    return entries.sort((a,b)=>{
+      const na=parseFloat(a[0].replace(/[^0-9.-]/g,'')),nb=parseFloat(b[0].replace(/[^0-9.-]/g,''));
+      if(!isNaN(na)&&!isNaN(nb))return nb-na;
+      return b[0].localeCompare(a[0]);
+    });
+  }
+  if(dir==='asc'){
+    return entries.sort((a,b)=>{
+      const na=parseFloat(a[0].replace(/[^0-9.-]/g,'')),nb=parseFloat(b[0].replace(/[^0-9.-]/g,''));
+      if(!isNaN(na)&&!isNaN(nb))return na-nb;
+      return a[0].localeCompare(b[0]);
+    });
+  }
+  // default: numbers asc, strings alpha
+  return entries.sort((a,b)=>{
     const na=parseFloat(a[0].replace(/[^0-9.-]/g,'')),nb=parseFloat(b[0].replace(/[^0-9.-]/g,''));
     if(!isNaN(na)&&!isNaN(nb))return na-nb;
     return a[0].localeCompare(b[0]);
   });
+}
+
+function setListSort(dir){
+  if(listSortDir[activeCol]===dir)dir=null; // toggle off
+  listSortDir[activeCol]=dir;
+  updateSortBtns();
+  renderChecklist();
+  // Also apply as table sort
+  if(dir){
+    activeSortCol=activeCol;
+    activeSortDir=dir;
+  } else if(activeSortCol===activeCol){
+    activeSortCol=null;
+    activeSortDir='asc';
+  }
+  updateAllFilterBtnSortIndicators();
+}
+
+function updateAllFilterBtnSortIndicators(){
+  document.querySelectorAll('th[data-col]').forEach(th=>{
+    const btn=th.querySelector('.filter-btn');
+    if(!btn)return;
+    if(th.dataset.col===activeSortCol){
+      btn.textContent=activeSortDir==='asc'?'▲':'▼';
+      btn.classList.add('sort-active');
+    } else {
+      btn.textContent='▾';
+      btn.classList.remove('sort-active');
+    }
+  });
+}
+
+function updateSortBtns(){
+  const dir=listSortDir[activeCol];
+  document.getElementById('fp-sort-az').classList.toggle('active',dir==='asc');
+  document.getElementById('fp-sort-za').classList.toggle('active',dir==='desc');
 }
 
 function renderChecklist(){
@@ -392,6 +449,7 @@ function openPanel(col,type,btn){
   if(CF[col] instanceof Set)pendingChecks[col]=new Set(CF[col]);
   else pendingChecks[col]=new Set();
 
+  updateSortBtns();
   renderChecklist();
 
   const rect=btn.getBoundingClientRect();
@@ -459,7 +517,7 @@ async function loadData(){
     const lat=D.reduce((m,r)=>r.updated_at>m?r.updated_at:m,'');
     const dt=lat?new Date(lat).toLocaleString('vi-VN'):'—';
     document.getElementById('last-updated').textContent=`Cập nhật: ${dt} — ${D.length.toLocaleString('vi-VN')} SKU`;
-    updateStats();renderTable();
+    updateStats();updateAllFilterBtnSortIndicators();renderTable();
   }catch(e){
     document.getElementById('last-updated').textContent='⚠ '+e.message;
     document.getElementById('tbody').innerHTML=`<tr><td colspan="16"><div class="empty-state"><div class="big">⚠</div>${e.message}</div></td></tr>`;
@@ -484,7 +542,6 @@ function updateStats(){
 
 function renderTable(){
   const search=document.getElementById('search-sku').value.toLowerCase().trim();
-  const fc=document.getElementById('f-sort').value;
 
   let data=D.filter(r=>{
     if(search&&!r.sku.toLowerCase().includes(search))return false;
@@ -503,16 +560,24 @@ function renderTable(){
     return true;
   });
 
+  // Sort: theo cột đang active sort (từ header filter), default = Thời gian bán hết Tồn tăng dần
+  const sortCol=activeSortCol||'ban_het';
+  const sortDir=activeSortDir||'asc';
   data.sort((a,b)=>{
-    if(fc==='ban_het'){
+    if(sortCol==='ban_het'){
       const ba=banHet(a),bb=banHet(b);
+      const dir=sortDir==='asc'?1:-1;
       if(ba===null&&bb===null)return 0;
       if(ba===null)return 1;if(bb===null)return -1;
       if(ba===Infinity&&bb===Infinity)return 0;
-      if(ba===Infinity)return -1;if(bb===Infinity)return 1;
-      return ba-bb;
+      if(ba===Infinity)return dir===1?1:-1;
+      if(bb===Infinity)return dir===1?-1:1;
+      return (ba-bb)*dir;
     }
-    return n(b[fc])-n(a[fc]);
+    if(sortCol==='sku'){
+      return sortDir==='asc'?a.sku.localeCompare(b.sku):b.sku.localeCompare(a.sku);
+    }
+    return sortDir==='asc'?n(a[sortCol])-n(b[sortCol]):n(b[sortCol])-n(a[sortCol]);
   });
 
   document.getElementById('row-count').textContent=data.length.toLocaleString('vi-VN')+' SKU';
@@ -543,6 +608,60 @@ function renderTable(){
     </tr>`;
   }).join('')+(data.length>500?`<tr class="more-row"><td colspan="16">Hiển thị 500/${data.length.toLocaleString('vi-VN')} SKU</td></tr>`:'');
 }
+function exportData(){
+  const search=document.getElementById('search-sku').value.toLowerCase().trim();
+  let data=D.filter(r=>{
+    if(search&&!r.sku.toLowerCase().includes(search))return false;
+    for(const[col,val]of Object.entries(CF)){
+      if(!val)continue;
+      const getDisplayVal=(col,r)=>{
+        if(col==='status')return status(r);
+        if(col==='ban_het'){const bh=banHet(r);if(bh===null)return'Hết hàng';if(bh===Infinity)return'—';return String(Math.round(bh*100)/100);}
+        if(col==='sku')return r.sku;
+        const x=n(r[col]);return x===0?'0':Math.round(x).toLocaleString('vi-VN');
+      };
+      if(val instanceof Set){
+        if(!val.has(getDisplayVal(col,r)))return false;
+      }
+    }
+    return true;
+  });
+
+  const rows=data.map(r=>{
+    const bh=banHet(r);
+    let bhVal='';
+    if(n(r.tong_ton_va_duong)<0)bhVal='Âm';
+    else if(bh===null)bhVal='Hết hàng';
+    else if(bh===Infinity)bhVal='';
+    else bhVal=Math.round(bh*100)/100;
+    return{
+      'SKU':r.sku,
+      'Tồn kho 1013':n(r.ton_1013),
+      'Tồn kho Khác (Others)':n(r.ton_others),
+      'Tồn kho BN':n(r.ton_bn),
+      'Tồn kho 1003':n(r.ton_1003),
+      'Tổng Tồn + Hàng đi đường':n(r.tong_ton_va_duong),
+      'Tồn kho hiện tại':n(r.ton_hien_tai),
+      'Hàng đi đường':n(r.hang_di_duong),
+      'Tổng sản lượng 1 tháng':n(r.tong_sl_thang),
+      'Sản lượng 1 tháng Shopee':n(r.sl_shopee),
+      'Sản lượng 1 tháng Tiktok':n(r.sl_tiktok),
+      'Sản lượng 1 tháng Sỉ':n(r.sl_si),
+      'AVG SL/Thang co ban':n(r.avg_sl_thang),
+      'Tong SL ban':n(r.tong_sl_ban),
+      'Thời gian bán hết Tồn':bhVal,
+      'Trạng thái':({critical:'Cần đẩy',warn:'Bình thường',ok:'Tốt',zero:'Hết hàng',check:'Check'})[status(r)],
+    };
+  });
+
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Inventory');
+  const now=new Date();
+  const ts=now.toISOString().slice(0,19).replace(/[-:T]/g,'');
+  XLSX.writeFile(wb,`Inventory_${ts}.xlsx`);
+}
+
 loadData();
 </script>
 </body>

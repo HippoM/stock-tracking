@@ -235,6 +235,7 @@ td:last-child{padding-right:24px;}
     <th data-col="tong_ton_va_duong" data-type="num" class="th-total" style="min-width:160px;"><div class="th-inner">Tổng Tồn + Hàng đi đường <span class="filter-btn" id="fb-tong_ton_va_duong">▾</span></div></th>
     <th data-col="ton_hien_tai" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Tồn kho hiện tại <span class="filter-btn" id="fb-ton_hien_tai">▾</span></div></th>
     <th data-col="hang_di_duong" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Hàng đi đường <span class="filter-btn" id="fb-hang_di_duong">▾</span></div></th>
+    <th data-col="ton_fbs" data-type="num" style="min-width:110px;"><div class="th-inner" style="color:#94a3b8;">Tồn FBS <span class="filter-btn" id="fb-ton_fbs">▾</span></div></th>
     <th data-col="tong_sl_thang" data-type="num" class="th-sl" style="min-width:160px;"><div class="th-inner">Tổng sản lượng 1 tháng <span class="filter-btn" id="fb-tong_sl_thang">▾</span></div></th>
     <th data-col="sl_shopee" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Shopee <span class="filter-btn" id="fb-sl_shopee">▾</span></div></th>
     <th data-col="sl_tiktok" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Tiktok <span class="filter-btn" id="fb-sl_tiktok">▾</span></div></th>
@@ -245,7 +246,7 @@ td:last-child{padding-right:24px;}
     <th data-col="status" data-type="select" style="min-width:110px;padding-right:24px;"><div class="th-inner">Trạng thái <span class="filter-btn" id="fb-status">▾</span></div></th>
   </tr></thead>
   <tbody id="tbody">
-    <tr><td colspan="16"><div class="empty-state"><div class="big"><span class="spin">↺</span></div>Đang kết nối Supabase...</div></td></tr>
+    <tr><td colspan="17"><div class="empty-state"><div class="big"><span class="spin">↺</span></div>Đang kết nối Supabase...</div></td></tr>
   </tbody>
 </table>
 </div>
@@ -528,7 +529,7 @@ async function loadData(){
     updateStats();updateAllFilterBtnSortIndicators();renderTable();
   }catch(e){
     document.getElementById('last-updated').textContent='⚠ '+e.message;
-    document.getElementById('tbody').innerHTML=`<tr><td colspan="16"><div class="empty-state"><div class="big">⚠</div>${e.message}</div></td></tr>`;
+    document.getElementById('tbody').innerHTML=`<tr><td colspan="17"><div class="empty-state"><div class="big">⚠</div>${e.message}</div></td></tr>`;
   }finally{btn.classList.remove('loading');ri.classList.remove('spin');ri.textContent='↺';}
 }
 
@@ -591,7 +592,7 @@ function renderTable(){
   document.getElementById('row-count').textContent=data.length.toLocaleString('vi-VN')+' SKU';
   const tbody=document.getElementById('tbody');
   if(!data.length){
-    tbody.innerHTML='<tr><td colspan="16"><div class="empty-state"><div class="big">🔍</div>Không tìm thấy SKU nào</div></td></tr>';
+    tbody.innerHTML='<tr><td colspan="17"><div class="empty-state"><div class="big">🔍</div>Không tìm thấy SKU nào</div></td></tr>';
     return;
   }
   tbody.innerHTML=data.slice(0,500).map(r=>{
@@ -605,6 +606,7 @@ function renderTable(){
       <td>${cnTot(r.tong_ton_va_duong)}</td>
       <td>${cn(r.ton_hien_tai,'n-sub')}</td>
       <td>${cn(r.hang_di_duong,'n-sub')}</td>
+      <td>${cn(r.ton_fbs,'n-sub')}</td>
       <td>${cn(r.tong_sl_thang,'n-sl')}</td>
       <td>${cn(r.sl_shopee,'n')}</td>
       <td>${cn(r.sl_tiktok,'n')}</td>
@@ -614,7 +616,7 @@ function renderTable(){
       <td>${cbh(r)}</td>
       <td>${BADGE[s]}</td>
     </tr>`;
-  }).join('')+(data.length>500?`<tr class="more-row"><td colspan="16">Hiển thị 500/${data.length.toLocaleString('vi-VN')} SKU</td></tr>`:'');
+  }).join('')+(data.length>500?`<tr class="more-row"><td colspan="17">Hiển thị 500/${data.length.toLocaleString('vi-VN')} SKU</td></tr>`:'');
 }
 function exportData(){
   const search=document.getElementById('search-sku').value.toLowerCase().trim();
@@ -651,6 +653,7 @@ function exportData(){
       'Tổng Tồn + Hàng đi đường':n(r.tong_ton_va_duong),
       'Tồn kho hiện tại':n(r.ton_hien_tai),
       'Hàng đi đường':n(r.hang_di_duong),
+      'Tồn FBS':n(r.ton_fbs),
       'Tổng sản lượng 1 tháng':n(r.tong_sl_thang),
       'Sản lượng 1 tháng Shopee':n(r.sl_shopee),
       'Sản lượng 1 tháng Tiktok':n(r.sl_tiktok),

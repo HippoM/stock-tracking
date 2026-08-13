@@ -9,7 +9,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#0f0f11;--bg2:#16161a;--bg3:#1e1e24;--bg4:#28282f;
+  --bg:#0f0f11;--bg2:#16161a;--bg3:#1e1e24;
   --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
   --text:#f0f0f4;--text2:#9898a8;--text3:#55555f;
   --cell-bg:#0f0f11;--cell-bg-hover:#16161a;
@@ -17,105 +17,83 @@
   --inter:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
 }
 @media(prefers-color-scheme:light){
-  :root{
-    --bg:#fff;--bg2:#f5f5f8;--bg3:#ebebef;--bg4:#e0e0e8;
-    --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.13);
-    --text:#111118;--text2:#44444f;--text3:#8888a0;
-    --cell-bg:#fff;--cell-bg-hover:#f5f5f8;
-    --accent:#16a34a;--blue:#2563eb;--warn:#d97706;--red:#dc2626;--purple:#7c3aed;--orange:#ea580c;--teal:#0891b2;
-  }
+  :root{--bg:#fff;--bg2:#f5f5f8;--bg3:#ebebef;--border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.13);--text:#111118;--text2:#44444f;--text3:#8888a0;--cell-bg:#fff;--cell-bg-hover:#f5f5f8;--accent:#16a34a;--blue:#2563eb;--warn:#d97706;--red:#dc2626;--purple:#7c3aed;--orange:#ea580c;--teal:#0891b2;}
 }
 body{font-family:var(--inter);background:var(--bg);color:var(--text);font-size:14px;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-
 .topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:13px 24px;border-bottom:1px solid var(--border);background:var(--bg);gap:12px;flex-wrap:wrap;}
 .topbar-left{display:flex;align-items:center;gap:12px;}
 .logo{font-size:14px;font-weight:600;}.logo span{color:var(--accent);}
 .tab-bar{display:flex;gap:2px;margin-left:16px;}
 .tab-btn{padding:5px 14px;border-radius:6px;border:1px solid transparent;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);transition:all .15s;}
-.tab-btn:hover{color:var(--text2);background:var(--bg3);}
-.tab-btn.active{background:var(--bg3);border-color:var(--border2);color:var(--text);}
-#tab-lock.active{color:var(--text);border-color:var(--border2);}
+#tab-lock.active{background:var(--bg3);border-color:var(--border2);color:var(--text);}
 #tab-elmich{color:var(--text3);}
 #tab-elmich:hover{color:var(--red);}
 #tab-elmich.active{color:var(--red);border-color:var(--red);background:rgba(248,113,113,0.08);}
 .dv{width:1px;height:20px;background:var(--border2);}
 #last-updated{font-family:var(--mono);font-size:11px;color:var(--text3);}
-.btn-refresh{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;}
-.btn-refresh:hover{border-color:var(--accent);color:var(--accent);}
-.btn-refresh.loading{opacity:.4;pointer-events:none;}
-
-.stats-row{flex-shrink:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.topbar-right{display:flex;gap:8px;}
+.btn-action{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;}
+.btn-action:hover{border-color:var(--accent);color:var(--accent);}
+.btn-action.loading{opacity:.4;pointer-events:none;}
+.stats-row{flex-shrink:0;display:grid;gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
 .stat-card{background:var(--bg);padding:14px 18px;}
 .stat-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;}
 .stat-value{font-family:var(--mono);font-size:20px;font-weight:500;}
 .c-blue{color:var(--blue);}.c-warn{color:var(--warn);}.c-green{color:var(--accent);}.c-red{color:var(--red);}.c-purple{color:var(--purple);}.c-orange{color:var(--orange);}.c-teal{color:var(--teal);}
 .stat-sub{font-size:11px;color:var(--text3);margin-top:3px;}
-
 .toolbar{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:10px 24px;border-bottom:1px solid var(--border);background:var(--bg2);flex-wrap:wrap;}
-input[type=text],select{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:var(--inter);font-size:13px;padding:6px 11px;outline:none;transition:border-color .15s;}
-input[type=text]:focus,select:focus{border-color:var(--blue);}
+input[type=text]{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:var(--inter);font-size:13px;padding:6px 11px;outline:none;transition:border-color .15s;min-width:180px;}
+input[type=text]:focus{border-color:var(--blue);}
 input[type=text]::placeholder{color:var(--text3);}
-select option{background:var(--bg3);}
-#search-sku{width:190px;}
 .row-count{font-size:12px;color:var(--text3);margin-left:auto;font-family:var(--mono);}
-
 .table-wrap{flex:1;overflow:auto;padding:0 0 24px;}
 table{border-collapse:collapse;font-size:13px;width:max-content;min-width:100%;}
-
-thead th{
-  position:sticky;top:0;z-index:2;
-  background:var(--bg);
-  font-size:10px;font-weight:600;color:var(--text3);
-  text-transform:uppercase;letter-spacing:.05em;
-  padding:10px 12px;white-space:nowrap;
-  border-bottom:2px solid var(--border2);
-  text-align:right;cursor:pointer;user-select:none;
-}
-thead th:first-child{text-align:left;padding-left:24px;}
+thead th{position:sticky;top:0;z-index:2;background:var(--bg);font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px;white-space:nowrap;border-bottom:2px solid var(--border2);text-align:right;}
+thead th:first-child{text-align:left;padding-left:24px;position:sticky;left:0;z-index:4;}
 thead th:last-child{padding-right:24px;}
-
-/* Freeze SKU */
-thead th:first-child{position:sticky;left:0;z-index:4;background:var(--bg);}
 tbody td:first-child{position:sticky;left:0;z-index:1;background:var(--cell-bg);box-shadow:2px 0 8px rgba(0,0,0,0.12);}
-
-/* Header cell layout */
 .th-inner{display:inline-flex;align-items:center;gap:5px;justify-content:flex-end;}
-thead th:first-child .th-inner{justify-content:flex-start;}
-
-/* Filter button */
-.filter-btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:16px;height:16px;border-radius:3px;
-  font-size:10px;opacity:0.4;
-  transition:opacity .15s,background .15s;
-  flex-shrink:0;
-}
+.filter-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:3px;font-size:10px;opacity:0.4;transition:opacity .15s;flex-shrink:0;}
 thead th:hover .filter-btn{opacity:0.8;}
 .filter-btn.active{opacity:1;color:var(--blue);}
 .filter-btn.sort-active{opacity:1;color:var(--accent);font-weight:700;}
-
-/* Dropdown panel */
-.filter-panel{
-  position:fixed;z-index:1000;
-  background:var(--bg2);border:1px solid var(--border2);
-  border-radius:10px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.4);
-  min-width:220px;max-width:280px;
-  display:none;overflow:hidden;
-}
+.th-1013{color:var(--purple)!important;}.th-others{color:var(--orange)!important;}.th-bn{color:var(--blue)!important;}.th-1003{color:var(--teal)!important;}.th-total{color:var(--warn)!important;}.th-sl{color:var(--accent)!important;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:hover{background:var(--cell-bg-hover);}
+tbody tr:hover td:first-child{background:var(--cell-bg-hover)!important;}
+tbody tr.row-critical{border-left:2px solid var(--red);}
+tbody tr.row-warn{border-left:2px solid var(--warn);}
+tbody tr.row-check{border-left:2px solid #f59e0b;background:rgba(251,191,36,.04);}
+td{padding:9px 12px;text-align:right;color:var(--text2);white-space:nowrap;}
+td:first-child{text-align:left;font-weight:500;color:var(--text);font-family:var(--mono);padding-left:24px;}
+td:last-child{padding-right:24px;}
+.n{font-family:var(--mono);}.n0{font-family:var(--mono);color:var(--text3);}
+.n-1013{font-family:var(--mono);color:var(--purple);}.n-oth{font-family:var(--mono);color:var(--orange);}.n-bn{font-family:var(--mono);color:var(--blue);}.n-1003{font-family:var(--mono);color:var(--teal);}
+.n-tot{font-family:var(--mono);color:var(--warn);font-weight:600;}.n-sl{font-family:var(--mono);color:var(--accent);font-weight:600;}.n-sub{font-family:var(--mono);color:#94a3b8;}
+.n-red{font-family:var(--mono);color:var(--red);}.n-wrn{font-family:var(--mono);color:var(--warn);}.n-ok{font-family:var(--mono);color:var(--accent);}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+.b-crit{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.2);}
+.b-warn{background:rgba(217,119,6,.1);color:var(--warn);border:1px solid rgba(217,119,6,.2);}
+.b-ok{background:rgba(22,163,74,.08);color:var(--accent);border:1px solid rgba(22,163,74,.18);}
+.b-zero{background:rgba(128,128,128,.08);color:var(--text3);border:1px solid var(--border2);}
+.b-check{background:rgba(251,191,36,.12);color:#f59e0b;border:1px solid rgba(251,191,36,.3);}
+.empty-state{text-align:center;padding:80px 0;color:var(--text3);font-size:14px;}
+.empty-state .big{font-size:36px;margin-bottom:12px;}
+.more-row td{text-align:center!important;color:var(--text3);font-size:12px;padding:14px;}
+.footnote{flex-shrink:0;font-size:11px;color:var(--text3);padding:8px 24px;border-top:1px solid var(--border);background:var(--bg2);}
+.filter-panel{position:fixed;z-index:1000;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.4);min-width:220px;max-width:280px;display:none;overflow:hidden;}
 .filter-panel.open{display:flex;flex-direction:column;}
 .fp-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 6px;border-bottom:1px solid var(--border);}
 .fp-head span{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
-.fp-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;}
-.fp-close:hover{color:var(--text);}
+.fp-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 4px;}
 .fp-search-wrap{padding:8px 10px 4px;}
 .fp-search{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:var(--inter);font-size:12px;padding:5px 9px;outline:none;}
 .fp-search:focus{border-color:var(--blue);}
 .fp-search::placeholder{color:var(--text3);}
-.fp-actions{display:flex;gap:6px;padding:4px 10px;}
+.fp-actions{display:flex;gap:6px;padding:4px 10px;align-items:center;}
 .fp-act{font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;padding:2px 6px;opacity:.8;border-radius:4px;}
-.fp-act.active{opacity:1;background:rgba(96,165,250,.15);font-weight:600;}
 .fp-act:hover{opacity:1;}
+.fp-act.active{opacity:1;background:rgba(96,165,250,.15);font-weight:600;}
 .fp-list{max-height:220px;overflow-y:auto;padding:4px 0;}
 .fp-item{display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;transition:background .1s;}
 .fp-item:hover{background:var(--bg3);}
@@ -123,51 +101,9 @@ thead th:hover .filter-btn{opacity:0.8;}
 .fp-item label{font-family:var(--mono);font-size:12px;color:var(--text2);cursor:pointer;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .fp-item-count{font-family:var(--mono);font-size:10px;color:var(--text3);}
 .fp-footer{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--border);}
-.fp-btn-clear{flex:1;padding:6px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;transition:all .15s;}
+.fp-btn-clear{flex:1;padding:6px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;}
 .fp-btn-clear:hover{border-color:var(--red);color:var(--red);}
-.fp-btn-apply{flex:1;padding:6px;border-radius:6px;border:none;background:var(--blue);color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.fp-btn-apply:hover{opacity:.85;}
-
-/* Colors */
-.th-1013{color:var(--purple)!important;}.th-others{color:var(--orange)!important;}
-.th-bn{color:var(--blue)!important;}.th-1003{color:var(--teal)!important;}
-.th-total{color:var(--warn)!important;}.th-sl{color:var(--accent)!important;}
-
-tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
-tbody tr:hover{background:var(--cell-bg-hover);}
-tbody tr:hover td:first-child{background:var(--cell-bg-hover)!important;}
-tbody tr.row-critical{border-left:2px solid var(--red);}
-tbody tr.row-warn{border-left:2px solid var(--warn);}
-tbody tr.row-check{border-left:2px solid #f59e0b;background:rgba(251,191,36,.04);}
-tbody tr.row-check td:first-child{background:rgba(251,191,36,.06)!important;}
-
-td{padding:9px 12px;text-align:right;color:var(--text2);white-space:nowrap;}
-td:first-child{text-align:left;font-weight:500;color:var(--text);font-family:var(--mono);padding-left:24px;}
-td:last-child{padding-right:24px;}
-
-.n{font-family:var(--mono);}.n0{font-family:var(--mono);color:var(--text3);}
-.n-1013{font-family:var(--mono);color:var(--purple);}
-.n-oth{font-family:var(--mono);color:var(--orange);}
-.n-bn{font-family:var(--mono);color:var(--blue);}
-.n-1003{font-family:var(--mono);color:var(--teal);}
-.n-tot{font-family:var(--mono);color:var(--warn);font-weight:600;}
-.n-sl{font-family:var(--mono);color:var(--accent);font-weight:600;}
-.n-sub{font-family:var(--mono);color:#94a3b8;}
-.n-red{font-family:var(--mono);color:var(--red);}
-.n-wrn{font-family:var(--mono);color:var(--warn);}
-.n-ok{font-family:var(--mono);color:var(--accent);}
-
-.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;white-space:nowrap;}
-.b-crit{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.2);}
-.b-warn{background:rgba(217,119,6,.1);color:var(--warn);border:1px solid rgba(217,119,6,.2);}
-.b-ok{background:rgba(22,163,74,.08);color:var(--accent);border:1px solid rgba(22,163,74,.18);}
-.b-zero{background:rgba(128,128,128,.08);color:var(--text3);border:1px solid var(--border2);}
-.b-check{background:rgba(251,191,36,.12);color:#f59e0b;border:1px solid rgba(251,191,36,.3);}
-
-.empty-state{text-align:center;padding:80px 0;color:var(--text3);font-size:14px;}
-.empty-state .big{font-size:36px;margin-bottom:12px;}
-.more-row td{text-align:center!important;color:var(--text3);font-size:12px;padding:14px;}
-.footnote{flex-shrink:0;font-size:11px;color:var(--text3);padding:8px 24px;border-top:1px solid var(--border);background:var(--bg2);}
+.fp-btn-apply{flex:1;padding:6px;border-radius:6px;border:none;background:var(--blue);color:#fff;font-size:12px;font-weight:600;cursor:pointer;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .spin{display:inline-block;animation:spin .8s linear infinite;}
 </style>
@@ -178,707 +114,436 @@ td:last-child{padding-right:24px;}
   const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6ZGJ1cWV2Znlpcmdmamt3a2hiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NTA0ODYsImV4cCI6MjA5NjEyNjQ4Nn0.WfeUan3Q2fIeIMWk6YoMurj66nQqXyn5JeqHCeN4jRY";
 </script>
 
-<!-- Excel-style filter panel -->
 <div class="filter-panel" id="filter-panel">
-  <div class="fp-head">
-    <span id="fp-label">Filter</span>
-    <button class="fp-close" onclick="closePanel()">✕</button>
-  </div>
-  <div class="fp-search-wrap">
-    <input type="text" class="fp-search" id="fp-search" placeholder="🔍 Tìm..." oninput="renderChecklist()"/>
-  </div>
+  <div class="fp-head"><span id="fp-label">Filter</span><button class="fp-close" onclick="closePanel()">x</button></div>
+  <div class="fp-search-wrap"><input type="text" class="fp-search" id="fp-search" placeholder="Tim..." oninput="renderChecklist()"/></div>
   <div class="fp-actions">
-    <button class="fp-act" onclick="checkAll()">Chọn tất cả</button>
-    <button class="fp-act" onclick="uncheckAll()">Bỏ chọn</button>
+    <button class="fp-act" onclick="checkAll()">Chon tat ca</button>
+    <button class="fp-act" onclick="uncheckAll()">Bo chon</button>
     <span style="flex:1"></span>
-    <button class="fp-act" id="fp-sort-az" onclick="setListSort('asc')" title="Sắp xếp A→Z / nhỏ→lớn">A→Z</button>
-    <button class="fp-act" id="fp-sort-za" onclick="setListSort('desc')" title="Sắp xếp Z→A / lớn→nhỏ">Z→A</button>
+    <button class="fp-act" id="fp-sort-az" onclick="setListSort('asc')">A-Z</button>
+    <button class="fp-act" id="fp-sort-za" onclick="setListSort('desc')">Z-A</button>
   </div>
   <div class="fp-list" id="fp-list"></div>
   <div class="fp-footer">
-    <button class="fp-btn-clear" onclick="clearColFilter()">✕ Xoá filter</button>
-    <button class="fp-btn-apply" onclick="applyChecklist()">Áp dụng</button>
+    <button class="fp-btn-clear" onclick="clearColFilter()">Xoa filter</button>
+    <button class="fp-btn-apply" onclick="applyChecklist()">Ap dung</button>
   </div>
 </div>
 
 <header class="topbar">
   <div class="topbar-left">
-    <span class="logo">📦 <span>Inventory</span></span>
+    <span class="logo">&#128230; <span>Inventory</span></span>
     <div class="tab-bar">
       <button class="tab-btn active" id="tab-lock" onclick="switchTab('lock')">Lock</button>
       <button class="tab-btn" id="tab-elmich" onclick="switchTab('elmich')">Elmich</button>
     </div>
     <div class="dv"></div>
-    <span id="last-updated">Đang tải...</span>
+    <span id="last-updated">Dang tai...</span>
   </div>
-  <div style="display:flex;gap:8px;">
-    <button class="btn-refresh" onclick="exportData()">⬇ Export Excel</button>
-    <button class="btn-refresh" id="btn-refresh" onclick="loadData()">
-      <span id="ri">↺</span> Refresh
-    </button>
+  <div class="topbar-right">
+    <button class="btn-action" onclick="exportData()">&#11015; Export Excel</button>
+    <button class="btn-action" id="btn-refresh" onclick="loadData()"><span id="ri">&#8635;</span> Refresh</button>
   </div>
 </header>
 
-<div class="stats-row">
-  <div class="stat-card"><div class="stat-label">Tổng SKU</div><div class="stat-value" id="s-total">—</div></div>
-  <div class="stat-card"><div class="stat-label">Tồn kho 1013</div><div class="stat-value c-purple" id="s-1013">—</div><div class="stat-sub" id="s-1013s"></div></div>
-  <div class="stat-card"><div class="stat-label">Tồn kho Others</div><div class="stat-value c-orange" id="s-oth">—</div><div class="stat-sub" id="s-oths"></div></div>
-  <div class="stat-card"><div class="stat-label">Tồn kho BN</div><div class="stat-value c-blue" id="s-bn">—</div><div class="stat-sub" id="s-bns"></div></div>
-  <div class="stat-card"><div class="stat-label">Tồn kho 1003</div><div class="stat-value c-teal" id="s-1003">—</div><div class="stat-sub" id="s-1003s"></div></div>
-  <div class="stat-card"><div class="stat-label">🔴 Cần đẩy &gt; 3 tháng</div><div class="stat-value c-red" id="s-crit">—</div><div class="stat-sub">Tồn cao, bán chậm</div></div>
-  <div class="stat-card"><div class="stat-label">🟡 Bình thường 1–3 tháng</div><div class="stat-value c-warn" id="s-warn">—</div><div class="stat-sub">Đang ổn</div></div>
-  <div class="stat-card"><div class="stat-label">✓ Tốt ≤ 1 tháng</div><div class="stat-value c-green" id="s-ok">—</div><div class="stat-sub">Bán nhanh, quay vòng tốt</div></div>
-  <!-- Elmich extra stats (hidden for Lock) -->
-  <div class="stat-card" id="sc-tonkho" style="display:none"><div class="stat-label">Tồn kho Elmich</div><div class="stat-value c-blue" id="s-tonkho">—</div><div class="stat-sub" id="s-tonkho-s"></div></div>
-</div>
-
+<div class="stats-row" id="stats-row"></div>
 <div class="toolbar">
-  <input type="text" id="search-sku" placeholder="🔍 Tìm SKU..." oninput="renderTable()" style="min-width:180px;"/>
-
-<span class="row-count" id="row-count"></span>
+  <input type="text" id="search-sku" placeholder="Tim SKU..." oninput="renderTable()"/>
+  <span class="row-count" id="row-count"></span>
 </div>
-
 <div class="table-wrap" onclick="handleOutsideClick(event)">
-<table>
-  <thead><tr id="thead-row">
-    <th data-col="sku" data-type="text" style="min-width:130px;"><div class="th-inner">SKU <span class="filter-btn" id="fb-sku">▾</span></div></th>
-    <th data-col="ton_1013" data-type="num" class="th-1013" style="min-width:100px;"><div class="th-inner">Tồn kho 1013 <span class="filter-btn" id="fb-ton_1013">▾</span></div></th>
-    <th data-col="ton_others" data-type="num" class="th-others" style="min-width:130px;"><div class="th-inner">Tồn kho Khác (Others) <span class="filter-btn" id="fb-ton_others">▾</span></div></th>
-    <th data-col="ton_bn" data-type="num" class="th-bn" style="min-width:100px;"><div class="th-inner">Tồn kho BN <span class="filter-btn" id="fb-ton_bn">▾</span></div></th>
-    <th data-col="ton_1003" data-type="num" class="th-1003" style="min-width:100px;"><div class="th-inner">Tồn kho 1003 <span class="filter-btn" id="fb-ton_1003">▾</span></div></th>
-    <th data-col="tong_ton_va_duong" data-type="num" class="th-total" style="min-width:160px;"><div class="th-inner">Tổng Tồn + Hàng đi đường <span class="filter-btn" id="fb-tong_ton_va_duong">▾</span></div></th>
-    <th data-col="ton_hien_tai" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Tồn kho hiện tại <span class="filter-btn" id="fb-ton_hien_tai">▾</span></div></th>
-    <th data-col="hang_di_duong" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Hàng đi đường <span class="filter-btn" id="fb-hang_di_duong">▾</span></div></th>
-    <th data-col="ton_fbs" data-type="num" style="min-width:110px;"><div class="th-inner" style="color:#94a3b8;">Tồn FBS <span class="filter-btn" id="fb-ton_fbs">▾</span></div></th>
-    <th data-col="tong_sl_thang" data-type="num" class="th-sl" style="min-width:160px;"><div class="th-inner">Tổng sản lượng 1 tháng <span class="filter-btn" id="fb-tong_sl_thang">▾</span></div></th>
-    <th data-col="sl_shopee" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Shopee <span class="filter-btn" id="fb-sl_shopee">▾</span></div></th>
-    <th data-col="sl_tiktok" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Tiktok <span class="filter-btn" id="fb-sl_tiktok">▾</span></div></th>
-    <th data-col="sl_si" data-type="num" style="min-width:130px;"><div class="th-inner">Sản lượng 1 tháng Sỉ <span class="filter-btn" id="fb-sl_si">▾</span></div></th>
-    <th data-col="avg_sl_thang" data-type="num" style="min-width:140px;"><div class="th-inner">AVG SL/Thang co ban <span class="filter-btn" id="fb-avg_sl_thang">▾</span></div></th>
-    <th data-col="tong_sl_ban" data-type="num" style="min-width:100px;"><div class="th-inner">Tong SL ban <span class="filter-btn" id="fb-tong_sl_ban">▾</span></div></th>
-    <th data-col="ban_het" data-type="num" style="min-width:150px;"><div class="th-inner">Thời gian bán hết Tồn <span class="filter-btn" id="fb-ban_het">▾</span></div></th>
-    <th data-col="status" data-type="select" style="min-width:110px;padding-right:24px;"><div class="th-inner">Trạng thái <span class="filter-btn" id="fb-status">▾</span></div></th>
-  </tr></thead>
-  <tbody id="tbody">
-    <tr><td colspan="17"><div class="empty-state"><div class="big"><span class="spin">↺</span></div>Đang kết nối Supabase...</div></td></tr>
-  </tbody>
-</table>
+  <table><thead><tr id="thead-row"></tr></thead><tbody id="tbody"></tbody></table>
 </div>
-
 <div class="footnote">
-  ✓ <b>Tốt</b>: ≤ 1 tháng &nbsp;|&nbsp; 🟡 <b>Bình thường</b>: 1–3 tháng &nbsp;|&nbsp;
-  🔴 <b>Cần đẩy</b>: &gt; 3 tháng hoặc SL = 0 &nbsp;|&nbsp;
-  <b>Thời gian bán hết Tồn</b> = (Tồn kho hiện tại + Hàng đi đường) ÷ Tổng SL 1 tháng
+  Tot: le 1 thang &nbsp;| Binh thuong: 1-3 thang &nbsp;| Can day: gt 3 thang hoac SL=0 &nbsp;|
+  Thoi gian ban het Ton = (Ton hien tai + Hang duong + FBS) / Tong SL 1 thang
 </div>
 
 <script>
-let D=[];
-const n=v=>{const x=parseFloat(v);return isNaN(x)?0:x;};
+var SUPABASE_URL2 = SUPABASE_URL;
+var SUPABASE_KEY2 = SUPABASE_KEY;
+var currentTab = "lock";
+var D = [];
+var CF = {};
+var activeCol = null;
+var pendingChecks = {};
+var listSortDir = {};
+var activeSortCol = null;
+var activeSortDir = "asc";
 
-// Column filters state
-const CF={};
-let activeCol=null;
+var STATUS_LABEL = {critical:"Can day",warn:"Binh thuong",ok:"Tot",zero:"Het hang",check:"Check"};
+var BADGE = {
+  critical:'<span class="badge b-crit">&#128308; Can day</span>',
+  warn:'<span class="badge b-warn">&#128993; Binh thuong</span>',
+  ok:'<span class="badge b-ok">&#10003; Tot</span>',
+  zero:'<span class="badge b-zero">Het hang</span>',
+  check:'<span class="badge b-check">&#9888; Check</span>'
+};
+
+function n(v){var x=parseFloat(v);return isNaN(x)?0:x;}
+function cn(v,cls){var x=n(v);if(x===0)return'<span class="n0">0</span>';return'<span class="'+cls+'">'+Math.round(x).toLocaleString("vi-VN")+'</span>';}
+function cnTot(v){var x=n(v);if(x<0)return'<span style="font-family:var(--mono);color:var(--red);font-weight:600;">'+Math.round(x).toLocaleString("vi-VN")+' !</span>';if(x===0)return'<span class="n0">0</span>';return'<span class="n-tot">'+Math.round(x).toLocaleString("vi-VN")+'</span>';}
+function cd(v){var x=n(v);if(x===0)return'<span class="n0">-</span>';return'<span class="n">'+x.toFixed(1)+'</span>';}
+
+function getFBS(r){return n(currentTab==="lock"?r.ton_fbs:r.fbs);}
 
 function banHet(r){
-  const t2c=n(r.ton_hien_tai)+n(r.hang_di_duong);
+  var t2c=n(r.ton_hien_tai)+n(r.hang_di_duong)+getFBS(r);
   if(t2c<=0)return null;
-  const sl=n(r.tong_sl_thang);
+  var sl=n(r.tong_sl_thang);
   if(sl<=0)return Infinity;
   return t2c/sl;
 }
-function status(r){
-  if(n(r.tong_ton_va_duong)<0)return'check';
-  const t2c=n(r.ton_hien_tai)+n(r.hang_di_duong);
-  if(t2c<=0)return'zero';
-  const bh=banHet(r);
-  if(bh===Infinity||bh>3)return'critical';
-  if(bh>1)return'warn';
-  return'ok';
+
+function getStatus(r){
+  if(n(r.tong_ton_va_duong)<0)return"check";
+  var t2c=n(r.ton_hien_tai)+n(r.hang_di_duong)+getFBS(r);
+  if(t2c<=0)return"zero";
+  var bh=banHet(r);
+  if(bh===Infinity||bh>3)return"critical";
+  if(bh>1)return"warn";
+  return"ok";
 }
-function cn(v,cls){const x=n(v);if(x===0)return'<span class="n0">0</span>';return`<span class="${cls}">${Math.round(x).toLocaleString('vi-VN')}</span>`;}
-function cnTot(v){const x=n(v);if(x<0)return`<span style="font-family:var(--mono);color:var(--red);font-weight:600;">${Math.round(x).toLocaleString('vi-VN')} ⚠</span>`;if(x===0)return'<span class="n0">0</span>';return`<span class="n-tot">${Math.round(x).toLocaleString('vi-VN')}</span>`;}
-function cd(v){const x=n(v);if(x===0)return'<span class="n0">—</span>';return`<span class="n">${x.toFixed(1)}</span>`;}
+
 function cbh(r){
-  if(n(r.tong_ton_va_duong)<0)return'<span style="color:var(--red);font-family:var(--mono);">⚠ Âm</span>';
-  const t2c=n(r.ton_hien_tai)+n(r.hang_di_duong);
-  if(t2c<=0)return'<span class="n0">—</span>';
-  const bh=banHet(r);
-  if(bh===Infinity)return'<span class="n0">—</span>';
-  if(bh<=1)return`<span class="n-ok">${bh.toFixed(2)}</span>`;
-  if(bh<=3)return`<span class="n-wrn">${bh.toFixed(2)}</span>`;
-  return`<span class="n-red">${bh.toFixed(2)}</span>`;
-}
-const BADGE={
-  critical:'<span class="badge b-crit">🔴 Cần đẩy</span>',
-  warn:'<span class="badge b-warn">🟡 Bình thường</span>',
-  ok:'<span class="badge b-ok">✓ Tốt</span>',
-  zero:'<span class="badge b-zero">Hết hàng</span>',
-  check:'<span class="badge b-check">⚠ Check</span>',
-};
-
-// ── FILTER PANEL ──────────────────────────────────────────
-let pendingChecks={};  // temp state before Apply
-let listSortDir={};  // per-column: 'asc'|'desc'|null (default) - for checklist display
-let activeSortCol=null;  // column currently sorting the table
-let activeSortDir='asc'; // 'asc' or 'desc'
-
-const STATUS_LABEL={
-  critical:'🔴 Cần đẩy',
-  warn:'🟡 Bình thường',
-  ok:'✓ Tốt',
-  zero:'Hết hàng',
-  check:'⚠ Check',
-};
-
-function getUniqueVals(col){
-  const vals={};
-  D.forEach(r=>{
-    let v;
-    if(col==='status')v=STATUS_LABEL[status(r)];
-    else if(col==='ban_het'){
-      const bh=banHet(r);
-      if(bh===null)v='Hết hàng';
-      else if(bh===Infinity)v='—';
-      else v=String(Math.round(bh*100)/100);
-    } else if(col==='sku'){
-      v=r.sku;
-    } else {
-      const x=n(r[col]);
-      v=x===0?'0':Math.round(x).toLocaleString('vi-VN');
-    }
-    vals[v]=(vals[v]||0)+1;
-  });
-  const dir=listSortDir[col];
-  const entries=Object.entries(vals);
-  if(dir==='desc'){
-    return entries.sort((a,b)=>{
-      const na=parseFloat(a[0].replace(/[^0-9.-]/g,'')),nb=parseFloat(b[0].replace(/[^0-9.-]/g,''));
-      if(!isNaN(na)&&!isNaN(nb))return nb-na;
-      return b[0].localeCompare(a[0]);
-    });
-  }
-  if(dir==='asc'){
-    return entries.sort((a,b)=>{
-      const na=parseFloat(a[0].replace(/[^0-9.-]/g,'')),nb=parseFloat(b[0].replace(/[^0-9.-]/g,''));
-      if(!isNaN(na)&&!isNaN(nb))return na-nb;
-      return a[0].localeCompare(b[0]);
-    });
-  }
-  // default: numbers asc, strings alpha
-  return entries.sort((a,b)=>{
-    const na=parseFloat(a[0].replace(/[^0-9.-]/g,'')),nb=parseFloat(b[0].replace(/[^0-9.-]/g,''));
-    if(!isNaN(na)&&!isNaN(nb))return na-nb;
-    return a[0].localeCompare(b[0]);
-  });
+  if(n(r.tong_ton_va_duong)<0)return'<span style="color:var(--red);font-family:var(--mono);">Am</span>';
+  var t2c=n(r.ton_hien_tai)+n(r.hang_di_duong)+getFBS(r);
+  if(t2c<=0)return'<span class="n0">-</span>';
+  var bh=banHet(r);
+  if(bh===Infinity)return'<span class="n0">-</span>';
+  if(bh<=1)return'<span class="n-ok">'+bh.toFixed(2)+'</span>';
+  if(bh<=3)return'<span class="n-wrn">'+bh.toFixed(2)+'</span>';
+  return'<span class="n-red">'+bh.toFixed(2)+'</span>';
 }
 
-function setListSort(dir){
-  if(listSortDir[activeCol]===dir)dir=null; // toggle off
-  listSortDir[activeCol]=dir;
-  updateSortBtns();
-  renderChecklist();
-  // Also apply as table sort
-  if(dir){
-    activeSortCol=activeCol;
-    activeSortDir=dir;
-  } else if(activeSortCol===activeCol){
-    activeSortCol=null;
-    activeSortDir='asc';
-  }
-  updateAllFilterBtnSortIndicators();
+function switchTab(tab){
+  if(currentTab===tab)return;
+  currentTab=tab;D=[];CF={};activeCol=null;pendingChecks={};listSortDir={};activeSortCol=null;activeSortDir="asc";
+  document.getElementById("tab-lock").classList.toggle("active",tab==="lock");
+  document.getElementById("tab-elmich").classList.toggle("active",tab==="elmich");
+  buildStatsRow();buildThead();loadData();
 }
 
-function updateAllFilterBtnSortIndicators(){
-  document.querySelectorAll('th[data-col]').forEach(th=>{
-    const btn=th.querySelector('.filter-btn');
-    if(!btn)return;
-    if(th.dataset.col===activeSortCol){
-      btn.textContent=activeSortDir==='asc'?'▲':'▼';
-      btn.classList.add('sort-active');
-    } else {
-      btn.textContent='▾';
-      btn.classList.remove('sort-active');
-    }
-  });
-}
-
-function updateSortBtns(){
-  const dir=listSortDir[activeCol];
-  document.getElementById('fp-sort-az').classList.toggle('active',dir==='asc');
-  document.getElementById('fp-sort-za').classList.toggle('active',dir==='desc');
-}
-
-function renderChecklist(){
-  const search=document.getElementById('fp-search').value.toLowerCase();
-  const list=document.getElementById('fp-list');
-  const vals=getUniqueVals(activeCol);
-  const selected=pendingChecks[activeCol]||new Set();
-  list.innerHTML='';
-  vals.filter(([v])=>!search||v.toLowerCase().includes(search)).forEach(([v,cnt])=>{
-    const chk=selected.size===0||selected.has(v);
-    const div=document.createElement('div');
-    div.className='fp-item';
-    const cb=document.createElement('input');
-    cb.type='checkbox';cb.checked=chk;
-    cb.addEventListener('change',function(){toggleCheck(v,this.checked);});
-    const lbl=document.createElement('label');lbl.textContent=v;
-    const sp=document.createElement('span');sp.className='fp-item-count';sp.textContent=cnt;
-    div.appendChild(cb);div.appendChild(lbl);div.appendChild(sp);
-    list.appendChild(div);
-  });
-}
-
-function toggleCheckEncoded(encoded,checked){toggleCheck(decodeURIComponent(encoded),checked);}
-function toggleCheck(val,checked){
-  if(!pendingChecks[activeCol])pendingChecks[activeCol]=new Set();
-  const s=pendingChecks[activeCol];
-  if(checked)s.add(val);else s.delete(val);
-}
-
-function checkAll(){
-  pendingChecks[activeCol]=new Set();
-  renderChecklist();
-}
-function uncheckAll(){
-  const vals=getUniqueVals(activeCol);
-  pendingChecks[activeCol]=new Set();// empty = will block all
-  document.getElementById('fp-list').querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=false);
-}
-
-function applyChecklist(){
-  const s=pendingChecks[activeCol];
-  if(!s||s.size===0){
-    delete CF[activeCol];
+function buildStatsRow(){
+  var el=document.getElementById("stats-row");
+  if(currentTab==="lock"){
+    el.style.gridTemplateColumns="repeat(8,1fr)";
+    el.innerHTML='<div class="stat-card"><div class="stat-label">Tong SKU</div><div class="stat-value" id="s-total">-</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Ton kho 1013</div><div class="stat-value c-purple" id="s-1013">-</div><div class="stat-sub" id="s-1013s"></div></div>'+
+    '<div class="stat-card"><div class="stat-label">Ton kho Others</div><div class="stat-value c-orange" id="s-oth">-</div><div class="stat-sub" id="s-oths"></div></div>'+
+    '<div class="stat-card"><div class="stat-label">Ton kho BN</div><div class="stat-value c-blue" id="s-bn">-</div><div class="stat-sub" id="s-bns"></div></div>'+
+    '<div class="stat-card"><div class="stat-label">Ton kho 1003</div><div class="stat-value c-teal" id="s-1003">-</div><div class="stat-sub" id="s-1003s"></div></div>'+
+    '<div class="stat-card"><div class="stat-label">Can day >3 thang</div><div class="stat-value c-red" id="s-crit">-</div><div class="stat-sub">Ton cao, ban cham</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Binh thuong 1-3 thang</div><div class="stat-value c-warn" id="s-warn">-</div><div class="stat-sub">Dang on</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Tot le 1 thang</div><div class="stat-value c-green" id="s-ok">-</div><div class="stat-sub">Ban nhanh</div></div>';
   } else {
-    // Check if all selected = no filter
-    const total=getUniqueVals(activeCol).length;
-    if(s.size>=total)delete CF[activeCol];
-    else CF[activeCol]=new Set(s);
+    el.style.gridTemplateColumns="repeat(5,1fr)";
+    el.innerHTML='<div class="stat-card"><div class="stat-label">Tong SKU</div><div class="stat-value" id="s-total">-</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Ton kho Elmich</div><div class="stat-value c-purple" id="s-tonkho">-</div><div class="stat-sub" id="s-tonkho-s"></div></div>'+
+    '<div class="stat-card"><div class="stat-label">Can day >3 thang</div><div class="stat-value c-red" id="s-crit">-</div><div class="stat-sub">Ton cao, ban cham</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Binh thuong 1-3 thang</div><div class="stat-value c-warn" id="s-warn">-</div><div class="stat-sub">Dang on</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Tot le 1 thang</div><div class="stat-value c-green" id="s-ok">-</div><div class="stat-sub">Ban nhanh</div></div>';
   }
-  updateFilterBtns();
-  renderTable();
-  closePanel();
 }
 
-function openPanel(col,type,btn){
-  if(activeCol===col){closePanel();return;}
-  activeCol=col;
-  const panel=document.getElementById('filter-panel');
-  const th=document.querySelector(`[data-col="${col}"]`);
-  document.getElementById('fp-label').textContent=(th?th.innerText.replace('▾','').trim():col);
-  document.getElementById('fp-search').value='';
-
-  // Init pending from current CF
-  if(CF[col] instanceof Set)pendingChecks[col]=new Set(CF[col]);
-  else pendingChecks[col]=new Set();
-
-  updateSortBtns();
-  renderChecklist();
-
-  const rect=btn.getBoundingClientRect();
-  panel.style.top=(rect.bottom+6)+'px';
-  panel.style.left=Math.min(rect.left,window.innerWidth-240)+'px';
-  panel.classList.add('open');
-  document.getElementById('fp-search').focus();
+function updateStats(){
+  function f(fn){return D.filter(fn).length;}
+  function s(fn){return D.reduce(function(a,r){return a+n(fn(r));},0);}
+  document.getElementById("s-total").textContent=D.length.toLocaleString("vi-VN");
+  document.getElementById("s-crit").textContent=f(function(r){return getStatus(r)==="critical";}).toLocaleString("vi-VN");
+  document.getElementById("s-warn").textContent=f(function(r){return getStatus(r)==="warn";}).toLocaleString("vi-VN");
+  document.getElementById("s-ok").textContent=f(function(r){return getStatus(r)==="ok";}).toLocaleString("vi-VN");
+  if(currentTab==="lock"){
+    document.getElementById("s-1013").textContent=s(function(r){return r.ton_1013;}).toLocaleString("vi-VN");
+    document.getElementById("s-oth").textContent=s(function(r){return r.ton_others;}).toLocaleString("vi-VN");
+    document.getElementById("s-bn").textContent=s(function(r){return r.ton_bn;}).toLocaleString("vi-VN");
+    document.getElementById("s-1003").textContent=s(function(r){return r.ton_1003;}).toLocaleString("vi-VN");
+    document.getElementById("s-1013s").textContent=f(function(r){return n(r.ton_1013)>0;}).toLocaleString("vi-VN")+" SKU co hang";
+    document.getElementById("s-oths").textContent=f(function(r){return n(r.ton_others)>0;}).toLocaleString("vi-VN")+" SKU co hang";
+    document.getElementById("s-bns").textContent=f(function(r){return n(r.ton_bn)>0;}).toLocaleString("vi-VN")+" SKU co hang";
+    document.getElementById("s-1003s").textContent=f(function(r){return n(r.ton_1003)>0;}).toLocaleString("vi-VN")+" SKU co hang";
+  } else {
+    document.getElementById("s-tonkho").textContent=s(function(r){return r.ton_kho;}).toLocaleString("vi-VN");
+    document.getElementById("s-tonkho-s").textContent=f(function(r){return n(r.ton_kho)>0;}).toLocaleString("vi-VN")+" SKU co hang";
+  }
 }
 
-function closePanel(){
-  document.getElementById('filter-panel').classList.remove('open');
-  activeCol=null;
-  updateFilterBtns();
-}
+var LOCK_COLS = [
+  {col:"sku",type:"text",label:"SKU",cls:"",w:130,left:true},
+  {col:"ton_1013",type:"num",label:"Ton kho 1013",cls:"th-1013",w:100},
+  {col:"ton_others",type:"num",label:"Ton kho Khac (Others)",cls:"th-others",w:140},
+  {col:"ton_bn",type:"num",label:"Ton kho BN",cls:"th-bn",w:100},
+  {col:"ton_1003",type:"num",label:"Ton kho 1003",cls:"th-1003",w:100},
+  {col:"tong_ton_va_duong",type:"num",label:"Tong Ton + Hang di duong",cls:"th-total",w:170},
+  {col:"ton_hien_tai",type:"num",label:"Ton kho hien tai",cls:"",w:130,sub:true},
+  {col:"hang_di_duong",type:"num",label:"Hang di duong",cls:"",w:120,sub:true},
+  {col:"ton_fbs",type:"num",label:"Ton FBS",cls:"",w:110,sub:true},
+  {col:"tong_sl_thang",type:"num",label:"Tong san luong 1 thang",cls:"th-sl",w:170},
+  {col:"sl_shopee",type:"num",label:"San luong 1 thang Shopee",cls:"",w:170},
+  {col:"sl_tiktok",type:"num",label:"San luong 1 thang Tiktok",cls:"",w:170},
+  {col:"sl_si",type:"num",label:"San luong 1 thang Si",cls:"",w:140},
+  {col:"avg_sl_thang",type:"num",label:"AVG SL/Thang co ban",cls:"",w:150},
+  {col:"tong_sl_ban",type:"num",label:"Tong SL ban",cls:"",w:110},
+  {col:"ban_het",type:"num",label:"Thoi gian ban het Ton",cls:"",w:160},
+  {col:"status",type:"select",label:"Trang thai",cls:"",w:110,last:true}
+];
+var ELMICH_COLS = [
+  {col:"sku",type:"text",label:"SKU",cls:"",w:130,left:true},
+  {col:"ton_kho",type:"num",label:"Ton kho",cls:"th-1013",w:110},
+  {col:"tong_ton_va_duong",type:"num",label:"Tong Ton + Hang di duong",cls:"th-total",w:170},
+  {col:"ton_hien_tai",type:"num",label:"Ton kho hien tai",cls:"",w:130,sub:true},
+  {col:"hang_di_duong",type:"num",label:"Hang di duong",cls:"",w:120,sub:true},
+  {col:"fbs",type:"num",label:"FBS",cls:"",w:100,sub:true},
+  {col:"tong_sl_thang",type:"num",label:"Tong san luong 1 thang",cls:"th-sl",w:170},
+  {col:"sl_shopee",type:"num",label:"San luong 1 thang Shopee",cls:"",w:170},
+  {col:"sl_tiktok",type:"num",label:"San luong 1 thang Tiktok",cls:"",w:170},
+  {col:"sl_si",type:"num",label:"San luong 1 thang Si",cls:"",w:140},
+  {col:"avg_sl_thang",type:"num",label:"AVG SL/Thang co ban",cls:"",w:150},
+  {col:"tong_sl_ban",type:"num",label:"Tong SL ban",cls:"",w:120},
+  {col:"ban_het",type:"num",label:"Thoi gian ban het Ton",cls:"",w:160},
+  {col:"status",type:"select",label:"Trang thai",cls:"",w:110,last:true}
+];
 
-function clearColFilter(){
-  delete CF[activeCol];
-  delete pendingChecks[activeCol];
-  updateFilterBtns();
-  renderTable();
-  closePanel();
-}
-
-function updateFilterBtns(){
-  document.querySelectorAll('.filter-btn').forEach(btn=>{
-    const col=btn.closest('th')?btn.closest('th').dataset.col:null;
-    if(col&&CF[col]!==undefined&&CF[col]!=='')btn.classList.add('active');
-    else btn.classList.remove('active');
+function buildThead(){
+  var tr=document.getElementById("thead-row");
+  var cols=currentTab==="lock"?LOCK_COLS:ELMICH_COLS;
+  tr.innerHTML=cols.map(function(c){
+    var style="min-width:"+c.w+"px;"+(c.last?"padding-right:24px;":"")+(c.left?"text-align:left;":"");
+    var color=c.sub?"color:#94a3b8;":"";
+    var innerStyle=color+(c.left?"justify-content:flex-start;":"");
+    return'<th data-col="'+c.col+'" data-type="'+c.type+'" class="'+c.cls+'" style="'+style+'">'+
+      '<div class="th-inner" style="'+innerStyle+'">'+c.label+' <span class="filter-btn" id="fb-'+c.col+'">v</span></div></th>';
+  }).join("");
+  tr.addEventListener("click",function(e){
+    var btn=e.target.closest(".filter-btn");
+    if(!btn)return;
+    e.stopPropagation();
+    var th=btn.closest("th");
+    openPanel(th.dataset.col,th.dataset.type,btn);
   });
 }
 
-function handleOutsideClick(e){
-  if(!e.target.closest('.filter-panel')&&!e.target.closest('.filter-btn')){
-    closePanel();
-  }
-}
-
-// Attach click to filter buttons via event delegation on thead
-document.getElementById('thead-row').addEventListener('click',function(e){
-  const btn=e.target.closest('.filter-btn');
-  if(!btn)return;
-  e.stopPropagation();
-  const th=btn.closest('th');
-  openPanel(th.dataset.col,th.dataset.type,btn);
-});
-
-// ── DATA ──────────────────────────────────────────────────
 async function fetchAll(){
-  const h={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
-  let all=[],from=0;
+  var table=currentTab==="lock"?"inventory":"inventory_elmich";
+  var h={"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY};
+  var all=[],from=0;
   while(true){
-    const r=await fetch(`${SUPABASE_URL}/rest/v1/inventory?select=*&order=sku.asc&offset=${from}&limit=1000`,{headers:h});
-    if(!r.ok)throw new Error('Supabase '+r.status);
-    const p=await r.json();all=all.concat(p);
+    var r=await fetch(SUPABASE_URL+"/rest/v1/"+table+"?select=*&order=sku.asc&offset="+from+"&limit=1000",{headers:h});
+    if(!r.ok)throw new Error(table+" "+r.status);
+    var p=await r.json();all=all.concat(p);
     if(p.length<1000)break;from+=1000;
   }
   return all;
 }
 
 async function loadData(){
-  const btn=document.getElementById('btn-refresh'),ri=document.getElementById('ri');
-  btn.classList.add('loading');ri.classList.add('spin');
+  var btn=document.getElementById("btn-refresh"),ri=document.getElementById("ri");
+  btn.classList.add("loading");ri.classList.add("spin");
   try{
     D=await fetchAll();
-    const lat=D.reduce((m,r)=>r.updated_at>m?r.updated_at:m,'');
-    const dt=lat?new Date(lat).toLocaleString('vi-VN'):'—';
-    document.getElementById('last-updated').textContent=`Cập nhật: ${dt} — ${D.length.toLocaleString('vi-VN')} SKU`;
+    var lat=D.reduce(function(m,r){return r.updated_at>m?r.updated_at:m;},"");
+    var dt=lat?new Date(lat).toLocaleString("vi-VN"):"-";
+    document.getElementById("last-updated").textContent="Cap nhat: "+dt+" - "+D.length.toLocaleString("vi-VN")+" SKU";
     updateStats();updateAllFilterBtnSortIndicators();renderTable();
   }catch(e){
-    document.getElementById('last-updated').textContent='⚠ '+e.message;
-    document.getElementById('tbody').innerHTML=`<tr><td colspan="17"><div class="empty-state"><div class="big">⚠</div>${e.message}</div></td></tr>`;
-  }finally{btn.classList.remove('loading');ri.classList.remove('spin');ri.textContent='↺';}
+    document.getElementById("last-updated").textContent="Loi: "+e.message;
+    document.getElementById("tbody").innerHTML='<tr><td colspan="20"><div class="empty-state"><div class="big">!</div>'+e.message+'</div></td></tr>';
+  }finally{btn.classList.remove("loading");ri.classList.remove("spin");ri.textContent="R";}
 }
 
-function updateStats(){
-  const f=fn=>D.filter(fn).length,s=fn=>D.reduce((a,r)=>a+n(fn(r)),0);
-  document.getElementById('s-total').textContent=D.length.toLocaleString('vi-VN');
-  document.getElementById('s-1013').textContent=s(r=>r.ton_1013).toLocaleString('vi-VN');
-  document.getElementById('s-oth').textContent=s(r=>r.ton_others).toLocaleString('vi-VN');
-  document.getElementById('s-bn').textContent=s(r=>r.ton_bn).toLocaleString('vi-VN');
-  document.getElementById('s-1003').textContent=s(r=>r.ton_1003).toLocaleString('vi-VN');
-  document.getElementById('s-crit').textContent=f(r=>status(r)==='critical').toLocaleString('vi-VN');
-  document.getElementById('s-warn').textContent=f(r=>status(r)==='warn').toLocaleString('vi-VN');
-  document.getElementById('s-ok').textContent=f(r=>status(r)==='ok').toLocaleString('vi-VN');
-  document.getElementById('s-1013s').textContent=f(r=>n(r.ton_1013)>0).toLocaleString('vi-VN')+' SKU có hàng';
-  document.getElementById('s-oths').textContent=f(r=>n(r.ton_others)>0).toLocaleString('vi-VN')+' SKU có hàng';
-  document.getElementById('s-bns').textContent=f(r=>n(r.ton_bn)>0).toLocaleString('vi-VN')+' SKU có hàng';
-  document.getElementById('s-1003s').textContent=f(r=>n(r.ton_1003)>0).toLocaleString('vi-VN')+' SKU có hàng';
+function getDisplayVal(col,r){
+  if(col==="status")return STATUS_LABEL[getStatus(r)];
+  if(col==="ban_het"){var bh=banHet(r);if(bh===null)return"Het hang";if(bh===Infinity)return"-";return String(Math.round(bh*100)/100);}
+  if(col==="sku")return r.sku;
+  var x=n(r[col]);return x===0?"0":Math.round(x).toLocaleString("vi-VN");
 }
 
-function renderLock(){
-  const search=document.getElementById('search-sku').value.toLowerCase().trim();
-
-  let data=D.filter(r=>{
+function renderTable(){
+  var search=document.getElementById("search-sku").value.toLowerCase().trim();
+  var data=D.filter(function(r){
     if(search&&!r.sku.toLowerCase().includes(search))return false;
-    // Column filters
-    for(const[col,val]of Object.entries(CF)){
-      if(!val)continue;
-      const getDisplayVal=(col,r)=>{
-        if(col==='status')return STATUS_LABEL[status(r)];
-        if(col==='ban_het'){const bh=banHet(r);if(bh===null)return'Hết hàng';if(bh===Infinity)return'—';return String(Math.round(bh*100)/100);}
-        const x=n(r[col]);return x===0?'0':Math.round(x).toLocaleString('vi-VN');
-      };
-      if(val instanceof Set){
-        if(!val.has(getDisplayVal(col,r)))return false;
-      }
+    for(var col in CF){
+      var val=CF[col];if(!val)continue;
+      if(val instanceof Set&&!val.has(getDisplayVal(col,r)))return false;
     }
     return true;
   });
-
-  // Sort: theo cột đang active sort (từ header filter), default = Thời gian bán hết Tồn tăng dần
-  const sortCol=activeSortCol||'ban_het';
-  const sortDir=activeSortDir||'asc';
-  data.sort((a,b)=>{
-    if(sortCol==='ban_het'){
-      const ba=banHet(a),bb=banHet(b);
-      const dir=sortDir==='asc'?1:-1;
-      if(ba===null&&bb===null)return 0;
-      if(ba===null)return 1;if(bb===null)return -1;
-      if(ba===Infinity&&bb===Infinity)return 0;
-      if(ba===Infinity)return dir===1?1:-1;
-      if(bb===Infinity)return dir===1?-1:1;
-      return (ba-bb)*dir;
+  var sc=activeSortCol||"ban_het",sd=activeSortDir||"asc";
+  data.sort(function(a,b){
+    if(sc==="ban_het"){
+      var ba=banHet(a),bb=banHet(b),dir=sd==="asc"?1:-1;
+      if(ba===null&&bb===null)return 0;if(ba===null)return 1;if(bb===null)return -1;
+      if(ba===Infinity&&bb===Infinity)return 0;if(ba===Infinity)return dir;if(bb===Infinity)return -dir;
+      return(ba-bb)*dir;
     }
-    if(sortCol==='sku'){
-      return sortDir==='asc'?a.sku.localeCompare(b.sku):b.sku.localeCompare(a.sku);
-    }
-    return sortDir==='asc'?n(a[sortCol])-n(b[sortCol]):n(b[sortCol])-n(a[sortCol]);
+    if(sc==="sku")return sd==="asc"?a.sku.localeCompare(b.sku):b.sku.localeCompare(a.sku);
+    return sd==="asc"?n(a[sc])-n(b[sc]):n(b[sc])-n(a[sc]);
   });
-
-  document.getElementById('row-count').textContent=data.length.toLocaleString('vi-VN')+' SKU';
-  const tbody=document.getElementById('tbody');
-  if(!data.length){
-    tbody.innerHTML='<tr><td colspan="17"><div class="empty-state"><div class="big">🔍</div>Không tìm thấy SKU nào</div></td></tr>';
-    return;
-  }
-  tbody.innerHTML=data.slice(0,500).map(r=>{
-    const s=status(r);
-    return`<tr class="${s==='critical'?'row-critical':s==='warn'?'row-warn':s==='check'?'row-check':''}">
-      <td>${r.sku}</td>
-      <td>${cn(r.ton_1013,'n-1013')}</td>
-      <td>${cn(r.ton_others,'n-oth')}</td>
-      <td>${cn(r.ton_bn,'n-bn')}</td>
-      <td>${cn(r.ton_1003,'n-1003')}</td>
-      <td>${cnTot(r.tong_ton_va_duong)}</td>
-      <td>${cn(r.ton_hien_tai,'n-sub')}</td>
-      <td>${cn(r.hang_di_duong,'n-sub')}</td>
-      <td>${cn(r.ton_fbs,'n-sub')}</td>
-      <td>${cn(r.tong_sl_thang,'n-sl')}</td>
-      <td>${cn(r.sl_shopee,'n')}</td>
-      <td>${cn(r.sl_tiktok,'n')}</td>
-      <td>${cn(r.sl_si,'n')}</td>
-      <td>${cd(r.avg_sl_thang)}</td>
-      <td>${cn(r.tong_sl_ban,'n')}</td>
-      <td>${cbh(r)}</td>
-      <td>${BADGE[s]}</td>
-    </tr>`;
-  }).join('')+(data.length>500?`<tr class="more-row"><td colspan="17">Hiển thị 500/${data.length.toLocaleString('vi-VN')} SKU</td></tr>`:'');
-}
-function renderTable(){
-  if(currentTab==='lock') renderLock();
-  else renderElmich();
+  document.getElementById("row-count").textContent=data.length.toLocaleString("vi-VN")+" SKU";
+  var tbody=document.getElementById("tbody");
+  if(!data.length){tbody.innerHTML='<tr><td colspan="20"><div class="empty-state"><div class="big">?</div>Khong tim thay SKU nao</div></td></tr>';return;}
+  var nc=currentTab==="lock"?17:14;
+  tbody.innerHTML=data.slice(0,500).map(function(r){
+    var s=getStatus(r),cls=s==="critical"?"row-critical":s==="warn"?"row-warn":s==="check"?"row-check":"";
+    var row;
+    if(currentTab==="lock"){
+      row='<td>'+r.sku+'</td>'+
+        '<td>'+cn(r.ton_1013,"n-1013")+'</td>'+
+        '<td>'+cn(r.ton_others,"n-oth")+'</td>'+
+        '<td>'+cn(r.ton_bn,"n-bn")+'</td>'+
+        '<td>'+cn(r.ton_1003,"n-1003")+'</td>'+
+        '<td>'+cnTot(r.tong_ton_va_duong)+'</td>'+
+        '<td>'+cn(r.ton_hien_tai,"n-sub")+'</td>'+
+        '<td>'+cn(r.hang_di_duong,"n-sub")+'</td>'+
+        '<td>'+cn(r.ton_fbs,"n-sub")+'</td>'+
+        '<td>'+cn(r.tong_sl_thang,"n-sl")+'</td>'+
+        '<td>'+cn(r.sl_shopee,"n")+'</td>'+
+        '<td>'+cn(r.sl_tiktok,"n")+'</td>'+
+        '<td>'+cn(r.sl_si,"n")+'</td>'+
+        '<td>'+cd(r.avg_sl_thang)+'</td>'+
+        '<td>'+cn(r.tong_sl_ban,"n")+'</td>'+
+        '<td>'+cbh(r)+'</td>'+
+        '<td>'+BADGE[s]+'</td>';
+    } else {
+      row='<td>'+r.sku+'</td>'+
+        '<td>'+cn(r.ton_kho,"n-1013")+'</td>'+
+        '<td>'+cnTot(r.tong_ton_va_duong)+'</td>'+
+        '<td>'+cn(r.ton_hien_tai,"n-sub")+'</td>'+
+        '<td>'+cn(r.hang_di_duong,"n-sub")+'</td>'+
+        '<td>'+cn(r.fbs,"n-sub")+'</td>'+
+        '<td>'+cn(r.tong_sl_thang,"n-sl")+'</td>'+
+        '<td>'+cn(r.sl_shopee,"n")+'</td>'+
+        '<td>'+cn(r.sl_tiktok,"n")+'</td>'+
+        '<td>'+cn(r.sl_si,"n")+'</td>'+
+        '<td>'+cd(r.avg_sl_thang)+'</td>'+
+        '<td>'+cn(r.tong_sl_ban,"n")+'</td>'+
+        '<td>'+cbh(r)+'</td>'+
+        '<td>'+BADGE[s]+'</td>';
+    }
+    return'<tr class="'+cls+'">'+row+'</tr>';
+  }).join("")+(data.length>500?'<tr class="more-row"><td colspan="'+nc+'">Hien thi 500/'+data.length.toLocaleString("vi-VN")+' SKU</td></tr>':"");
 }
 
 function exportData(){
-  const search=document.getElementById('search-sku').value.toLowerCase().trim();
-  let data=D.filter(r=>{
+  var search=document.getElementById("search-sku").value.toLowerCase().trim();
+  var data=D.filter(function(r){
     if(search&&!r.sku.toLowerCase().includes(search))return false;
-    for(const[col,val]of Object.entries(CF)){
-      if(!val)continue;
-      const getDisplayVal=(col,r)=>{
-        if(col==='status')return STATUS_LABEL[status(r)];
-        if(col==='ban_het'){const bh=banHet(r);if(bh===null)return'Hết hàng';if(bh===Infinity)return'—';return String(Math.round(bh*100)/100);}
-        if(col==='sku')return r.sku;
-        const x=n(r[col]);return x===0?'0':Math.round(x).toLocaleString('vi-VN');
-      };
-      if(val instanceof Set){
-        if(!val.has(getDisplayVal(col,r)))return false;
-      }
-    }
+    for(var col in CF){var val=CF[col];if(!val)continue;if(val instanceof Set&&!val.has(getDisplayVal(col,r)))return false;}
     return true;
   });
-
-  const rows=data.map(r=>{
-    const bh=banHet(r);
-    let bhVal='';
-    if(n(r.tong_ton_va_duong)<0)bhVal='Âm';
-    else if(bh===null)bhVal='Hết hàng';
-    else if(bh===Infinity)bhVal='';
-    else bhVal=Math.round(bh*100)/100;
-    return{
-      'SKU':r.sku,
-      'Tồn kho 1013':n(r.ton_1013),
-      'Tồn kho Khác (Others)':n(r.ton_others),
-      'Tồn kho BN':n(r.ton_bn),
-      'Tồn kho 1003':n(r.ton_1003),
-      'Tổng Tồn + Hàng đi đường':n(r.tong_ton_va_duong),
-      'Tồn kho hiện tại':n(r.ton_hien_tai),
-      'Hàng đi đường':n(r.hang_di_duong),
-      'Tồn FBS':n(r.ton_fbs),
-      'Tổng sản lượng 1 tháng':n(r.tong_sl_thang),
-      'Sản lượng 1 tháng Shopee':n(r.sl_shopee),
-      'Sản lượng 1 tháng Tiktok':n(r.sl_tiktok),
-      'Sản lượng 1 tháng Sỉ':n(r.sl_si),
-      'AVG SL/Thang co ban':n(r.avg_sl_thang),
-      'Tong SL ban':n(r.tong_sl_ban),
-      'Thời gian bán hết Tồn':bhVal,
-      'Trạng thái':({critical:'Cần đẩy',warn:'Bình thường',ok:'Tốt',zero:'Hết hàng',check:'Check'})[status(r)],
-    };
-  });
-
-  const ws=XLSX.utils.json_to_sheet(rows);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,'Inventory');
-  const now=new Date();
-  const ts=now.toISOString().slice(0,19).replace(/[-:T]/g,'');
-  XLSX.writeFile(wb,`Inventory_${ts}.xlsx`);
-}
-
-// ── TAB SWITCHING ─────────────────────────────────────
-let currentTab = 'lock';
-const ELMICH_URL = SUPABASE_URL;
-const ELMICH_KEY = SUPABASE_KEY;
-const ELMICH_TABLE = 'inventory_elmich';
-
-function switchTab(tab){
-  if(currentTab === tab) return;
-  currentTab = tab;
-  D = [];
-  document.getElementById('tab-lock').classList.toggle('active', tab==='lock');
-  document.getElementById('tab-elmich').classList.toggle('active', tab==='elmich');
-
-  // Toggle Elmich-only stat cards
-  ['sc-tonkho'].forEach(id=>{
-    document.getElementById(id).style.display = tab==='elmich' ? '' : 'none';
-  });
-
-  // Toggle Lock-only stat cards (1013, others, bn, 1003)
-  ['sc-1013','sc-oth','sc-bn','sc-1003'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.style.display = tab==='lock' ? '' : 'none';
-  });
-
-  // Update table headers
-  updateHeaders();
-  loadData();
-}
-
-function updateHeaders(){
-  const thead = document.querySelector('thead tr');
-  if(currentTab === 'lock'){
-    thead.innerHTML = `
-      <th data-col="sku" data-type="text" style="min-width:130px;"><div class="th-inner">SKU <span class="filter-btn" id="fb-sku">▾</span></div></th>
-      <th data-col="ton_1013" data-type="num" class="th-1013" style="min-width:100px;"><div class="th-inner">Tồn kho 1013 <span class="filter-btn" id="fb-ton_1013">▾</span></div></th>
-      <th data-col="ton_others" data-type="num" class="th-others" style="min-width:130px;"><div class="th-inner">Tồn kho Khác (Others) <span class="filter-btn" id="fb-ton_others">▾</span></div></th>
-      <th data-col="ton_bn" data-type="num" class="th-bn" style="min-width:100px;"><div class="th-inner">Tồn kho BN <span class="filter-btn" id="fb-ton_bn">▾</span></div></th>
-      <th data-col="ton_1003" data-type="num" class="th-1003" style="min-width:100px;"><div class="th-inner">Tồn kho 1003 <span class="filter-btn" id="fb-ton_1003">▾</span></div></th>
-      <th data-col="tong_ton_va_duong" data-type="num" class="th-total" style="min-width:160px;"><div class="th-inner">Tổng Tồn + Hàng đi đường <span class="filter-btn" id="fb-tong_ton_va_duong">▾</span></div></th>
-      <th data-col="ton_hien_tai" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Tồn kho hiện tại <span class="filter-btn" id="fb-ton_hien_tai">▾</span></div></th>
-      <th data-col="hang_di_duong" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Hàng đi đường <span class="filter-btn" id="fb-hang_di_duong">▾</span></div></th>
-      <th data-col="ton_fbs" data-type="num" style="min-width:110px;"><div class="th-inner" style="color:#94a3b8;">Tồn FBS <span class="filter-btn" id="fb-ton_fbs">▾</span></div></th>
-      <th data-col="tong_sl_thang" data-type="num" class="th-sl" style="min-width:160px;"><div class="th-inner">Tổng sản lượng 1 tháng <span class="filter-btn" id="fb-tong_sl_thang">▾</span></div></th>
-      <th data-col="sl_shopee" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Shopee <span class="filter-btn" id="fb-sl_shopee">▾</span></div></th>
-      <th data-col="sl_tiktok" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Tiktok <span class="filter-btn" id="fb-sl_tiktok">▾</span></div></th>
-      <th data-col="sl_si" data-type="num" style="min-width:130px;"><div class="th-inner">Sản lượng 1 tháng Sỉ <span class="filter-btn" id="fb-sl_si">▾</span></div></th>
-      <th data-col="avg_sl_thang" data-type="num" style="min-width:140px;"><div class="th-inner">AVG SL/Thang co ban <span class="filter-btn" id="fb-avg_sl_thang">▾</span></div></th>
-      <th data-col="tong_sl_ban" data-type="num" style="min-width:100px;"><div class="th-inner">Tong SL ban <span class="filter-btn" id="fb-tong_sl_ban">▾</span></div></th>
-      <th data-col="ban_het" data-type="num" style="min-width:150px;"><div class="th-inner">Thời gian bán hết Tồn <span class="filter-btn" id="fb-ban_het">▾</span></div></th>
-      <th data-col="status" data-type="select" style="min-width:110px;padding-right:24px;"><div class="th-inner">Trạng thái <span class="filter-btn" id="fb-status">▾</span></div></th>
-    `;
+  var bhl=function(r){var bh=banHet(r);if(bh===null)return"Het hang";if(bh===Infinity)return"";return Math.round(bh*100)/100;};
+  var stl=function(r){return{critical:"Can day",warn:"Binh thuong",ok:"Tot",zero:"Het hang",check:"Check"}[getStatus(r)];};
+  var rows;
+  if(currentTab==="lock"){
+    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho 1013":n(r.ton_1013),"Ton kho Others":n(r.ton_others),"Ton kho BN":n(r.ton_bn),"Ton kho 1003":n(r.ton_1003),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"Ton FBS":n(r.ton_fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Trang thai":stl(r)};});
   } else {
-    thead.innerHTML = `
-      <th data-col="sku" data-type="text" style="min-width:130px;"><div class="th-inner">SKU <span class="filter-btn" id="fb-sku">▾</span></div></th>
-      <th data-col="ton_kho" data-type="num" class="th-1013" style="min-width:110px;"><div class="th-inner">Tồn kho <span class="filter-btn" id="fb-ton_kho">▾</span></div></th>
-      <th data-col="tong_ton_va_duong" data-type="num" class="th-total" style="min-width:160px;"><div class="th-inner">Tổng Tồn + Hàng đi đường <span class="filter-btn" id="fb-tong_ton_va_duong">▾</span></div></th>
-      <th data-col="ton_hien_tai" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Tồn kho hiện tại <span class="filter-btn" id="fb-ton_hien_tai">▾</span></div></th>
-      <th data-col="hang_di_duong" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Hàng đi đường <span class="filter-btn" id="fb-hang_di_duong">▾</span></div></th>
-      <th data-col="fbs" data-type="num" style="min-width:100px;"><div class="th-inner" style="color:#94a3b8;">FBS <span class="filter-btn" id="fb-fbs">▾</span></div></th>
-      <th data-col="tong_sl_thang" data-type="num" class="th-sl" style="min-width:160px;"><div class="th-inner">Tổng sản lượng 1 tháng <span class="filter-btn" id="fb-tong_sl_thang">▾</span></div></th>
-      <th data-col="sl_shopee" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Shopee <span class="filter-btn" id="fb-sl_shopee">▾</span></div></th>
-      <th data-col="sl_tiktok" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Tiktok <span class="filter-btn" id="fb-sl_tiktok">▾</span></div></th>
-      <th data-col="sl_si" data-type="num" style="min-width:130px;"><div class="th-inner">Sản lượng 1 tháng Sỉ <span class="filter-btn" id="fb-sl_si">▾</span></div></th>
-      <th data-col="avg_sl_thang" data-type="num" style="min-width:140px;"><div class="th-inner">AVG SL/Tháng có bán <span class="filter-btn" id="fb-avg_sl_thang">▾</span></div></th>
-      <th data-col="tong_sl_ban" data-type="num" style="min-width:120px;"><div class="th-inner">Tổng SL bán <span class="filter-btn" id="fb-tong_sl_ban">▾</span></div></th>
-      <th data-col="ban_het" data-type="num" style="min-width:150px;"><div class="th-inner">Thời gian bán hết Tồn <span class="filter-btn" id="fb-ban_het">▾</span></div></th>
-      <th data-col="status" data-type="select" style="min-width:110px;padding-right:24px;"><div class="th-inner">Trạng thái <span class="filter-btn" id="fb-status">▾</span></div></th>
-    `;
+    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho":n(r.ton_kho),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"FBS":n(r.fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Trang thai":stl(r)};});
   }
-  // Reattach click handler to new thead
-  document.getElementById('thead-row') && null; // thead-row id may differ
-  document.querySelector('thead tr').addEventListener('click', function(e){
-    const btn=e.target.closest('.filter-btn');
-    if(!btn)return;
-    e.stopPropagation();
-    const th=btn.closest('th');
-    openPanel(th.dataset.col,th.dataset.type,btn);
+  var ws=XLSX.utils.json_to_sheet(rows);
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,currentTab==="lock"?"Lock":"Elmich");
+  var ts=new Date().toISOString().slice(0,19).replace(/[-:T]/g,"");
+  XLSX.writeFile(wb,"Inventory_"+currentTab+"_"+ts+".xlsx");
+}
+
+function getUniqueVals(col){
+  var vals={};
+  D.forEach(function(r){
+    var v=getDisplayVal(col,r);
+    vals[v]=(vals[v]||0)+1;
+  });
+  var dir=listSortDir[col];
+  var entries=Object.entries(vals);
+  function sorter(a,b){var na=parseFloat(a[0].replace(/[^0-9.-]/g,"")),nb=parseFloat(b[0].replace(/[^0-9.-]/g,""));if(!isNaN(na)&&!isNaN(nb))return na-nb;return a[0].localeCompare(b[0]);}
+  if(dir==="desc")return entries.sort(function(a,b){return-sorter(a,b);});
+  return entries.sort(sorter);
+}
+
+function renderChecklist(){
+  var search=document.getElementById("fp-search").value.toLowerCase();
+  var list=document.getElementById("fp-list");
+  var vals=getUniqueVals(activeCol);
+  var selected=pendingChecks[activeCol]||new Set();
+  list.innerHTML="";
+  vals.filter(function(v){return!search||v[0].toLowerCase().includes(search);}).forEach(function(entry){
+    var v=entry[0],cnt=entry[1];
+    var chk=selected.size===0||selected.has(v);
+    var div=document.createElement("div");div.className="fp-item";
+    var cb=document.createElement("input");cb.type="checkbox";cb.checked=chk;
+    cb.addEventListener("change",function(){toggleCheck(v,cb.checked);});
+    var lbl=document.createElement("label");lbl.textContent=v;
+    var sp=document.createElement("span");sp.className="fp-item-count";sp.textContent=cnt;
+    div.appendChild(cb);div.appendChild(lbl);div.appendChild(sp);list.appendChild(div);
   });
 }
 
-// ── OVERRIDE fetchAll for tab ──────────────────────────
-const _origFetchAll = fetchAll;
-async function fetchAll(){
-  const table = currentTab==='lock' ? 'inventory' : ELMICH_TABLE;
-  const h={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
-  let all=[],from=0;
-  while(true){
-    const r=await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&order=sku.asc&offset=${from}&limit=1000`,{headers:h});
-    if(!r.ok)throw new Error(table+' '+r.status);
-    const p=await r.json();all=all.concat(p);
-    if(p.length<1000)break;from+=1000;
-  }
-  return all;
+function toggleCheck(val,checked){if(!pendingChecks[activeCol])pendingChecks[activeCol]=new Set();if(checked)pendingChecks[activeCol].add(val);else pendingChecks[activeCol].delete(val);}
+function checkAll(){pendingChecks[activeCol]=new Set();renderChecklist();}
+function uncheckAll(){document.getElementById("fp-list").querySelectorAll("input").forEach(function(c){c.checked=false;});}
+
+function applyChecklist(){
+  var s=pendingChecks[activeCol];
+  if(!s||s.size===0){delete CF[activeCol];}
+  else{var total=getUniqueVals(activeCol).length;if(s.size>=total)delete CF[activeCol];else CF[activeCol]=new Set(s);}
+  updateFilterBtns();renderTable();closePanel();
 }
 
+function setListSort(dir){
+  if(listSortDir[activeCol]===dir)dir=null;
+  listSortDir[activeCol]=dir;
+  updateSortBtns();renderChecklist();
+  if(dir){activeSortCol=activeCol;activeSortDir=dir;}
+  else if(activeSortCol===activeCol){activeSortCol=null;activeSortDir="asc";}
+  updateAllFilterBtnSortIndicators();
+}
 
-function renderElmich(){
-  // Elmich render
-  const search=document.getElementById('search-sku').value.toLowerCase().trim();
-  let data=D.filter(r=>{
-    if(search&&!r.sku.toLowerCase().includes(search))return false;
-    for(const[col,val]of Object.entries(CF)){
-      if(!val)continue;
-      const getDisplayVal=(col,r)=>{
-        if(col==='status')return STATUS_LABEL[status(r)];
-        if(col==='ban_het'){const bh=banHet(r);if(bh===null)return'Hết hàng';if(bh===Infinity)return'—';return String(Math.round(bh*100)/100);}
-        const x=n(r[col]);return x===0?'0':Math.round(x).toLocaleString('vi-VN');
-      };
-      if(val instanceof Set){if(!val.has(getDisplayVal(col,r)))return false;}
-    }
-    return true;
+function updateSortBtns(){
+  var dir=listSortDir[activeCol];
+  document.getElementById("fp-sort-az").classList.toggle("active",dir==="asc");
+  document.getElementById("fp-sort-za").classList.toggle("active",dir==="desc");
+}
+
+function openPanel(col,type,btn){
+  if(activeCol===col){closePanel();return;}
+  activeCol=col;
+  var panel=document.getElementById("filter-panel");
+  var th=document.querySelector('[data-col="'+col+'"]');
+  document.getElementById("fp-label").textContent=th?th.innerText.replace(/[vAZ-]/g,"").trim():col;
+  document.getElementById("fp-search").value="";
+  if(CF[col] instanceof Set)pendingChecks[col]=new Set(CF[col]);else pendingChecks[col]=new Set();
+  updateSortBtns();renderChecklist();
+  var rect=btn.getBoundingClientRect();
+  panel.style.top=(rect.bottom+6)+"px";
+  panel.style.left=Math.min(rect.left,window.innerWidth-240)+"px";
+  panel.classList.add("open");
+  document.getElementById("fp-search").focus();
+}
+
+function closePanel(){document.getElementById("filter-panel").classList.remove("open");activeCol=null;updateFilterBtns();}
+function clearColFilter(){delete CF[activeCol];delete pendingChecks[activeCol];updateFilterBtns();renderTable();closePanel();}
+
+function updateFilterBtns(){
+  document.querySelectorAll(".filter-btn").forEach(function(btn){
+    var th=btn.closest("th");if(!th)return;
+    var col=th.dataset.col;
+    if(col&&CF[col] instanceof Set&&CF[col].size>0)btn.classList.add("active");
+    else btn.classList.remove("active");
   });
+}
 
-  const sortCol=activeSortCol||'ban_het';
-  const sortDir=activeSortDir||'asc';
-  data.sort((a,b)=>{
-    if(sortCol==='ban_het'){
-      const ba=banHet(a),bb=banHet(b);
-      const dir=sortDir==='asc'?1:-1;
-      if(ba===null&&bb===null)return 0;
-      if(ba===null)return 1;if(bb===null)return -1;
-      if(ba===Infinity&&bb===Infinity)return 0;
-      if(ba===Infinity)return dir===1?1:-1;
-      if(bb===Infinity)return dir===1?-1:1;
-      return (ba-bb)*dir;
-    }
-    if(sortCol==='sku')return sortDir==='asc'?a.sku.localeCompare(b.sku):b.sku.localeCompare(a.sku);
-    return sortDir==='asc'?n(a[sortCol])-n(b[sortCol]):n(b[sortCol])-n(a[sortCol]);
+function updateAllFilterBtnSortIndicators(){
+  document.querySelectorAll("th[data-col]").forEach(function(th){
+    var btn=th.querySelector(".filter-btn");if(!btn)return;
+    if(th.dataset.col===activeSortCol){btn.textContent=activeSortDir==="asc"?"^":"v";btn.classList.add("sort-active");}
+    else{btn.textContent="v";btn.classList.remove("sort-active");}
   });
-
-  document.getElementById('row-count').textContent=data.length.toLocaleString('vi-VN')+' SKU';
-  const tbody=document.getElementById('tbody');
-  if(!data.length){
-    tbody.innerHTML='<tr><td colspan="15"><div class="empty-state"><div class="big">🔍</div>Không tìm thấy SKU nào</div></td></tr>';
-    return;
-  }
-  tbody.innerHTML=data.slice(0,500).map(r=>{
-    const s=status(r);
-    return`<tr class="${s==='critical'?'row-critical':s==='warn'?'row-warn':s==='check'?'row-check':''}">
-      <td>${r.sku}</td>
-      <td>${cn(r.ton_kho,'n-1013')}</td>
-      <td>${cnTot(r.tong_ton_va_duong)}</td>
-      <td>${cn(r.ton_hien_tai,'n-sub')}</td>
-      <td>${cn(r.hang_di_duong,'n-sub')}</td>
-      <td>${cn(r.fbs,'n-sub')}</td>
-      <td>${cn(r.tong_sl_thang,'n-sl')}</td>
-      <td>${cn(r.sl_shopee,'n')}</td>
-      <td>${cn(r.sl_tiktok,'n')}</td>
-      <td>${cn(r.sl_si,'n')}</td>
-      <td>${cd(r.avg_sl_thang)}</td>
-      <td>${cn(r.tong_sl_ban,'n')}</td>
-      <td>${cbh(r)}</td>
-      <td>${BADGE[s]}</td>
-    </tr>`;
-  }).join('')+(data.length>500?`<tr class="more-row"><td colspan="15">Hiển thị 500/${data.length.toLocaleString('vi-VN')} SKU</td></tr>`:'');
 }
 
-// ── OVERRIDE updateStats for Elmich ───────────────────
-function updateStats(){
-  if(currentTab==='lock') updateStatsLock();
-  else updateStatsElmich();
-}
+function handleOutsideClick(e){if(!e.target.closest(".filter-panel")&&!e.target.closest(".filter-btn"))closePanel();}
 
-function updateStatsElmich(){
-  
-  const f=fn=>D.filter(fn).length,s=fn=>D.reduce((a,r)=>a+n(fn(r)),0);
-  document.getElementById('s-total').textContent=D.length.toLocaleString('vi-VN');
-  // Hide Lock stats, show Elmich stats
-  document.getElementById('s-1013').textContent='—';
-  document.getElementById('s-oth').textContent='—';
-  document.getElementById('s-bn').textContent='—';
-  document.getElementById('s-1003').textContent='—';
-  document.getElementById('s-crit').textContent=f(r=>status(r)==='critical').toLocaleString('vi-VN');
-  document.getElementById('s-warn').textContent=f(r=>status(r)==='warn').toLocaleString('vi-VN');
-  document.getElementById('s-ok').textContent=f(r=>status(r)==='ok').toLocaleString('vi-VN');
-  document.getElementById('s-tonkho').textContent=s(r=>r.ton_kho).toLocaleString('vi-VN');
-  document.getElementById('s-tonkho-s').textContent=f(r=>n(r.ton_kho)>0).toLocaleString('vi-VN')+' SKU có hàng';
-}
-
-// Add id to stat cards for Lock (for hiding when switching to Elmich)
-document.addEventListener('DOMContentLoaded',()=>{
-  const cards=document.querySelectorAll('.stat-card');
-  // Cards order: total, 1013, oth, bn, 1003, crit, warn, ok, tonkho(elmich), stock(elmich)
-  const ids=['','sc-1013','sc-oth','sc-bn','sc-1003','','','','sc-tonkho'];
-  cards.forEach((c,i)=>{ if(ids[i]) c.id=ids[i]; });
-});
-
+buildStatsRow();
+buildThead();
 loadData();
 </script>
 </body>

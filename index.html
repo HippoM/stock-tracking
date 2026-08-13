@@ -563,7 +563,7 @@ function updateStats(){
   document.getElementById('s-1003s').textContent=f(r=>n(r.ton_1003)>0).toLocaleString('vi-VN')+' SKU có hàng';
 }
 
-function renderTable(){
+function renderLock(){
   const search=document.getElementById('search-sku').value.toLowerCase().trim();
 
   let data=D.filter(r=>{
@@ -632,6 +632,11 @@ function renderTable(){
     </tr>`;
   }).join('')+(data.length>500?`<tr class="more-row"><td colspan="17">Hiển thị 500/${data.length.toLocaleString('vi-VN')} SKU</td></tr>`:'');
 }
+function renderTable(){
+  if(currentTab==='lock') renderLock();
+  else renderElmich();
+}
+
 function exportData(){
   const search=document.getElementById('search-sku').value.toLowerCase().trim();
   let data=D.filter(r=>{
@@ -782,14 +787,8 @@ async function fetchAll(){
   return all;
 }
 
-// ── OVERRIDE renderRow for Elmich ──────────────────────
-const _origRenderRow = typeof renderRow === 'function' ? renderRow : null;
 
-// Patch tbody render for Elmich columns
-const _origRenderTable = renderTable;
-function renderTable(){
-  if(currentTab==='lock'){ _origRenderTable(); return; }
-
+function renderElmich(){
   // Elmich render
   const search=document.getElementById('search-sku').value.toLowerCase().trim();
   let data=D.filter(r=>{
@@ -851,9 +850,13 @@ function renderTable(){
 }
 
 // ── OVERRIDE updateStats for Elmich ───────────────────
-const _origUpdateStats = updateStats;
 function updateStats(){
-  if(currentTab==='lock'){ _origUpdateStats(); return; }
+  if(currentTab==='lock') updateStatsLock();
+  else updateStatsElmich();
+}
+
+function updateStatsElmich(){
+  
   const f=fn=>D.filter(fn).length,s=fn=>D.reduce((a,r)=>a+n(fn(r)),0);
   document.getElementById('s-total').textContent=D.length.toLocaleString('vi-VN');
   // Hide Lock stats, show Elmich stats

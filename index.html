@@ -30,6 +30,14 @@ body{font-family:var(--inter);background:var(--bg);color:var(--text);font-size:1
 .topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:13px 24px;border-bottom:1px solid var(--border);background:var(--bg);gap:12px;flex-wrap:wrap;}
 .topbar-left{display:flex;align-items:center;gap:12px;}
 .logo{font-size:14px;font-weight:600;}.logo span{color:var(--accent);}
+.tab-bar{display:flex;gap:2px;margin-left:16px;}
+.tab-btn{padding:5px 14px;border-radius:6px;border:1px solid transparent;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);transition:all .15s;}
+.tab-btn:hover{color:var(--text2);background:var(--bg3);}
+.tab-btn.active{background:var(--bg3);border-color:var(--border2);color:var(--text);}
+#tab-lock.active{color:var(--text);border-color:var(--border2);}
+#tab-elmich{color:var(--text3);}
+#tab-elmich:hover{color:var(--red);}
+#tab-elmich.active{color:var(--red);border-color:var(--red);background:rgba(248,113,113,0.08);}
 .dv{width:1px;height:20px;background:var(--border2);}
 #last-updated{font-family:var(--mono);font-size:11px;color:var(--text3);}
 .btn-refresh{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;}
@@ -196,6 +204,10 @@ td:last-child{padding-right:24px;}
 <header class="topbar">
   <div class="topbar-left">
     <span class="logo">📦 <span>Inventory</span></span>
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-lock" onclick="switchTab('lock')">Lock</button>
+      <button class="tab-btn" id="tab-elmich" onclick="switchTab('elmich')">Elmich</button>
+    </div>
     <div class="dv"></div>
     <span id="last-updated">Đang tải...</span>
   </div>
@@ -216,6 +228,8 @@ td:last-child{padding-right:24px;}
   <div class="stat-card"><div class="stat-label">🔴 Cần đẩy &gt; 3 tháng</div><div class="stat-value c-red" id="s-crit">—</div><div class="stat-sub">Tồn cao, bán chậm</div></div>
   <div class="stat-card"><div class="stat-label">🟡 Bình thường 1–3 tháng</div><div class="stat-value c-warn" id="s-warn">—</div><div class="stat-sub">Đang ổn</div></div>
   <div class="stat-card"><div class="stat-label">✓ Tốt ≤ 1 tháng</div><div class="stat-value c-green" id="s-ok">—</div><div class="stat-sub">Bán nhanh, quay vòng tốt</div></div>
+  <!-- Elmich extra stats (hidden for Lock) -->
+  <div class="stat-card" id="sc-tonkho" style="display:none"><div class="stat-label">Tồn kho Elmich</div><div class="stat-value c-blue" id="s-tonkho">—</div><div class="stat-sub" id="s-tonkho-s"></div></div>
 </div>
 
 <div class="toolbar">
@@ -672,6 +686,195 @@ function exportData(){
   const ts=now.toISOString().slice(0,19).replace(/[-:T]/g,'');
   XLSX.writeFile(wb,`Inventory_${ts}.xlsx`);
 }
+
+// ── TAB SWITCHING ─────────────────────────────────────
+let currentTab = 'lock';
+const ELMICH_URL = SUPABASE_URL;
+const ELMICH_KEY = SUPABASE_KEY;
+const ELMICH_TABLE = 'inventory_elmich';
+
+function switchTab(tab){
+  if(currentTab === tab) return;
+  currentTab = tab;
+  D = [];
+  document.getElementById('tab-lock').classList.toggle('active', tab==='lock');
+  document.getElementById('tab-elmich').classList.toggle('active', tab==='elmich');
+
+  // Toggle Elmich-only stat cards
+  ['sc-tonkho'].forEach(id=>{
+    document.getElementById(id).style.display = tab==='elmich' ? '' : 'none';
+  });
+
+  // Toggle Lock-only stat cards (1013, others, bn, 1003)
+  ['sc-1013','sc-oth','sc-bn','sc-1003'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.style.display = tab==='lock' ? '' : 'none';
+  });
+
+  // Update table headers
+  updateHeaders();
+  loadData();
+}
+
+function updateHeaders(){
+  const thead = document.querySelector('thead tr');
+  if(currentTab === 'lock'){
+    thead.innerHTML = `
+      <th data-col="sku" data-type="text" style="min-width:130px;"><div class="th-inner">SKU <span class="filter-btn" id="fb-sku">▾</span></div></th>
+      <th data-col="ton_1013" data-type="num" class="th-1013" style="min-width:100px;"><div class="th-inner">Tồn kho 1013 <span class="filter-btn" id="fb-ton_1013">▾</span></div></th>
+      <th data-col="ton_others" data-type="num" class="th-others" style="min-width:130px;"><div class="th-inner">Tồn kho Khác (Others) <span class="filter-btn" id="fb-ton_others">▾</span></div></th>
+      <th data-col="ton_bn" data-type="num" class="th-bn" style="min-width:100px;"><div class="th-inner">Tồn kho BN <span class="filter-btn" id="fb-ton_bn">▾</span></div></th>
+      <th data-col="ton_1003" data-type="num" class="th-1003" style="min-width:100px;"><div class="th-inner">Tồn kho 1003 <span class="filter-btn" id="fb-ton_1003">▾</span></div></th>
+      <th data-col="tong_ton_va_duong" data-type="num" class="th-total" style="min-width:160px;"><div class="th-inner">Tổng Tồn + Hàng đi đường <span class="filter-btn" id="fb-tong_ton_va_duong">▾</span></div></th>
+      <th data-col="ton_hien_tai" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Tồn kho hiện tại <span class="filter-btn" id="fb-ton_hien_tai">▾</span></div></th>
+      <th data-col="hang_di_duong" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Hàng đi đường <span class="filter-btn" id="fb-hang_di_duong">▾</span></div></th>
+      <th data-col="ton_fbs" data-type="num" style="min-width:110px;"><div class="th-inner" style="color:#94a3b8;">Tồn FBS <span class="filter-btn" id="fb-ton_fbs">▾</span></div></th>
+      <th data-col="tong_sl_thang" data-type="num" class="th-sl" style="min-width:160px;"><div class="th-inner">Tổng sản lượng 1 tháng <span class="filter-btn" id="fb-tong_sl_thang">▾</span></div></th>
+      <th data-col="sl_shopee" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Shopee <span class="filter-btn" id="fb-sl_shopee">▾</span></div></th>
+      <th data-col="sl_tiktok" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Tiktok <span class="filter-btn" id="fb-sl_tiktok">▾</span></div></th>
+      <th data-col="sl_si" data-type="num" style="min-width:130px;"><div class="th-inner">Sản lượng 1 tháng Sỉ <span class="filter-btn" id="fb-sl_si">▾</span></div></th>
+      <th data-col="avg_sl_thang" data-type="num" style="min-width:140px;"><div class="th-inner">AVG SL/Thang co ban <span class="filter-btn" id="fb-avg_sl_thang">▾</span></div></th>
+      <th data-col="tong_sl_ban" data-type="num" style="min-width:100px;"><div class="th-inner">Tong SL ban <span class="filter-btn" id="fb-tong_sl_ban">▾</span></div></th>
+      <th data-col="ban_het" data-type="num" style="min-width:150px;"><div class="th-inner">Thời gian bán hết Tồn <span class="filter-btn" id="fb-ban_het">▾</span></div></th>
+      <th data-col="status" data-type="select" style="min-width:110px;padding-right:24px;"><div class="th-inner">Trạng thái <span class="filter-btn" id="fb-status">▾</span></div></th>
+    `;
+  } else {
+    thead.innerHTML = `
+      <th data-col="sku" data-type="text" style="min-width:130px;"><div class="th-inner">SKU <span class="filter-btn" id="fb-sku">▾</span></div></th>
+      <th data-col="ton_kho" data-type="num" class="th-1013" style="min-width:110px;"><div class="th-inner">Tồn kho <span class="filter-btn" id="fb-ton_kho">▾</span></div></th>
+      <th data-col="tong_ton_va_duong" data-type="num" class="th-total" style="min-width:160px;"><div class="th-inner">Tổng Tồn + Hàng đi đường <span class="filter-btn" id="fb-tong_ton_va_duong">▾</span></div></th>
+      <th data-col="ton_hien_tai" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Tồn kho hiện tại <span class="filter-btn" id="fb-ton_hien_tai">▾</span></div></th>
+      <th data-col="hang_di_duong" data-type="num" style="min-width:120px;"><div class="th-inner" style="color:#94a3b8;">Hàng đi đường <span class="filter-btn" id="fb-hang_di_duong">▾</span></div></th>
+      <th data-col="fbs" data-type="num" style="min-width:100px;"><div class="th-inner" style="color:#94a3b8;">FBS <span class="filter-btn" id="fb-fbs">▾</span></div></th>
+      <th data-col="tong_sl_thang" data-type="num" class="th-sl" style="min-width:160px;"><div class="th-inner">Tổng sản lượng 1 tháng <span class="filter-btn" id="fb-tong_sl_thang">▾</span></div></th>
+      <th data-col="sl_shopee" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Shopee <span class="filter-btn" id="fb-sl_shopee">▾</span></div></th>
+      <th data-col="sl_tiktok" data-type="num" style="min-width:150px;"><div class="th-inner">Sản lượng 1 tháng Tiktok <span class="filter-btn" id="fb-sl_tiktok">▾</span></div></th>
+      <th data-col="sl_si" data-type="num" style="min-width:130px;"><div class="th-inner">Sản lượng 1 tháng Sỉ <span class="filter-btn" id="fb-sl_si">▾</span></div></th>
+      <th data-col="avg_sl_thang" data-type="num" style="min-width:140px;"><div class="th-inner">AVG SL/Tháng có bán <span class="filter-btn" id="fb-avg_sl_thang">▾</span></div></th>
+      <th data-col="tong_sl_ban" data-type="num" style="min-width:120px;"><div class="th-inner">Tổng SL bán <span class="filter-btn" id="fb-tong_sl_ban">▾</span></div></th>
+      <th data-col="ban_het" data-type="num" style="min-width:150px;"><div class="th-inner">Thời gian bán hết Tồn <span class="filter-btn" id="fb-ban_het">▾</span></div></th>
+      <th data-col="status" data-type="select" style="min-width:110px;padding-right:24px;"><div class="th-inner">Trạng thái <span class="filter-btn" id="fb-status">▾</span></div></th>
+    `;
+  }
+  // Reattach click handler to new thead
+  document.getElementById('thead-row') && null; // thead-row id may differ
+  document.querySelector('thead tr').addEventListener('click', function(e){
+    const btn=e.target.closest('.filter-btn');
+    if(!btn)return;
+    e.stopPropagation();
+    const th=btn.closest('th');
+    openPanel(th.dataset.col,th.dataset.type,btn);
+  });
+}
+
+// ── OVERRIDE fetchAll for tab ──────────────────────────
+const _origFetchAll = fetchAll;
+async function fetchAll(){
+  const table = currentTab==='lock' ? 'inventory' : ELMICH_TABLE;
+  const h={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
+  let all=[],from=0;
+  while(true){
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&order=sku.asc&offset=${from}&limit=1000`,{headers:h});
+    if(!r.ok)throw new Error(table+' '+r.status);
+    const p=await r.json();all=all.concat(p);
+    if(p.length<1000)break;from+=1000;
+  }
+  return all;
+}
+
+// ── OVERRIDE renderRow for Elmich ──────────────────────
+const _origRenderRow = typeof renderRow === 'function' ? renderRow : null;
+
+// Patch tbody render for Elmich columns
+const _origRenderTable = renderTable;
+function renderTable(){
+  if(currentTab==='lock'){ _origRenderTable(); return; }
+
+  // Elmich render
+  const search=document.getElementById('search-sku').value.toLowerCase().trim();
+  let data=D.filter(r=>{
+    if(search&&!r.sku.toLowerCase().includes(search))return false;
+    for(const[col,val]of Object.entries(CF)){
+      if(!val)continue;
+      const getDisplayVal=(col,r)=>{
+        if(col==='status')return STATUS_LABEL[status(r)];
+        if(col==='ban_het'){const bh=banHet(r);if(bh===null)return'Hết hàng';if(bh===Infinity)return'—';return String(Math.round(bh*100)/100);}
+        const x=n(r[col]);return x===0?'0':Math.round(x).toLocaleString('vi-VN');
+      };
+      if(val instanceof Set){if(!val.has(getDisplayVal(col,r)))return false;}
+    }
+    return true;
+  });
+
+  const sortCol=activeSortCol||'ban_het';
+  const sortDir=activeSortDir||'asc';
+  data.sort((a,b)=>{
+    if(sortCol==='ban_het'){
+      const ba=banHet(a),bb=banHet(b);
+      const dir=sortDir==='asc'?1:-1;
+      if(ba===null&&bb===null)return 0;
+      if(ba===null)return 1;if(bb===null)return -1;
+      if(ba===Infinity&&bb===Infinity)return 0;
+      if(ba===Infinity)return dir===1?1:-1;
+      if(bb===Infinity)return dir===1?-1:1;
+      return (ba-bb)*dir;
+    }
+    if(sortCol==='sku')return sortDir==='asc'?a.sku.localeCompare(b.sku):b.sku.localeCompare(a.sku);
+    return sortDir==='asc'?n(a[sortCol])-n(b[sortCol]):n(b[sortCol])-n(a[sortCol]);
+  });
+
+  document.getElementById('row-count').textContent=data.length.toLocaleString('vi-VN')+' SKU';
+  const tbody=document.getElementById('tbody');
+  if(!data.length){
+    tbody.innerHTML='<tr><td colspan="15"><div class="empty-state"><div class="big">🔍</div>Không tìm thấy SKU nào</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML=data.slice(0,500).map(r=>{
+    const s=status(r);
+    return`<tr class="${s==='critical'?'row-critical':s==='warn'?'row-warn':s==='check'?'row-check':''}">
+      <td>${r.sku}</td>
+      <td>${cn(r.ton_kho,'n-1013')}</td>
+      <td>${cnTot(r.tong_ton_va_duong)}</td>
+      <td>${cn(r.ton_hien_tai,'n-sub')}</td>
+      <td>${cn(r.hang_di_duong,'n-sub')}</td>
+      <td>${cn(r.fbs,'n-sub')}</td>
+      <td>${cn(r.tong_sl_thang,'n-sl')}</td>
+      <td>${cn(r.sl_shopee,'n')}</td>
+      <td>${cn(r.sl_tiktok,'n')}</td>
+      <td>${cn(r.sl_si,'n')}</td>
+      <td>${cd(r.avg_sl_thang)}</td>
+      <td>${cn(r.tong_sl_ban,'n')}</td>
+      <td>${cbh(r)}</td>
+      <td>${BADGE[s]}</td>
+    </tr>`;
+  }).join('')+(data.length>500?`<tr class="more-row"><td colspan="15">Hiển thị 500/${data.length.toLocaleString('vi-VN')} SKU</td></tr>`:'');
+}
+
+// ── OVERRIDE updateStats for Elmich ───────────────────
+const _origUpdateStats = updateStats;
+function updateStats(){
+  if(currentTab==='lock'){ _origUpdateStats(); return; }
+  const f=fn=>D.filter(fn).length,s=fn=>D.reduce((a,r)=>a+n(fn(r)),0);
+  document.getElementById('s-total').textContent=D.length.toLocaleString('vi-VN');
+  // Hide Lock stats, show Elmich stats
+  document.getElementById('s-1013').textContent='—';
+  document.getElementById('s-oth').textContent='—';
+  document.getElementById('s-bn').textContent='—';
+  document.getElementById('s-1003').textContent='—';
+  document.getElementById('s-crit').textContent=f(r=>status(r)==='critical').toLocaleString('vi-VN');
+  document.getElementById('s-warn').textContent=f(r=>status(r)==='warn').toLocaleString('vi-VN');
+  document.getElementById('s-ok').textContent=f(r=>status(r)==='ok').toLocaleString('vi-VN');
+  document.getElementById('s-tonkho').textContent=s(r=>r.ton_kho).toLocaleString('vi-VN');
+  document.getElementById('s-tonkho-s').textContent=f(r=>n(r.ton_kho)>0).toLocaleString('vi-VN')+' SKU có hàng';
+}
+
+// Add id to stat cards for Lock (for hiding when switching to Elmich)
+document.addEventListener('DOMContentLoaded',()=>{
+  const cards=document.querySelectorAll('.stat-card');
+  // Cards order: total, 1013, oth, bn, 1003, crit, warn, ok, tonkho(elmich), stock(elmich)
+  const ids=['','sc-1013','sc-oth','sc-bn','sc-1003','','','','sc-tonkho'];
+  cards.forEach((c,i)=>{ if(ids[i]) c.id=ids[i]; });
+});
 
 loadData();
 </script>

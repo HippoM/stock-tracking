@@ -282,6 +282,7 @@ var LOCK_COLS = [
   {col:"sl_shopee",type:"num",label:"San luong 1 thang Shopee",cls:"",w:170},
   {col:"sl_tiktok",type:"num",label:"San luong 1 thang Tiktok",cls:"",w:170},
   {col:"sl_si",type:"num",label:"San luong 1 thang Si",cls:"",w:140},
+  {col:"sl_top_value",type:"num",label:"San luong 1 thang Top Value",cls:"",w:170},
   {col:"avg_sl_thang",type:"num",label:"AVG SL/Thang co ban",cls:"",w:150},
   {col:"tong_sl_ban",type:"num",label:"Tong SL ban",cls:"",w:110},
   {col:"ban_het",type:"num",label:"Thoi gian ban het Ton",cls:"",w:160},
@@ -298,6 +299,7 @@ var ELMICH_COLS = [
   {col:"sl_shopee",type:"num",label:"San luong 1 thang Shopee",cls:"",w:170},
   {col:"sl_tiktok",type:"num",label:"San luong 1 thang Tiktok",cls:"",w:170},
   {col:"sl_si",type:"num",label:"San luong 1 thang Si",cls:"",w:140},
+  {col:"sl_top_value",type:"num",label:"San luong 1 thang Top Value",cls:"",w:170},
   {col:"avg_sl_thang",type:"num",label:"AVG SL/Thang co ban",cls:"",w:150},
   {col:"tong_sl_ban",type:"num",label:"Tong SL ban",cls:"",w:120},
   {col:"ban_het",type:"num",label:"Thoi gian ban het Ton",cls:"",w:160},
@@ -400,6 +402,7 @@ function renderTable(){
         '<td>'+cn(r.sl_shopee,"n")+'</td>'+
         '<td>'+cn(r.sl_tiktok,"n")+'</td>'+
         '<td>'+cn(r.sl_si,"n")+'</td>'+
+        '<td>'+cn(r.sl_top_value,"n")+'</td>'+
         '<td>'+cd(r.avg_sl_thang)+'</td>'+
         '<td>'+cn(r.tong_sl_ban,"n")+'</td>'+
         '<td>'+cbh(r)+'</td>'+
@@ -415,6 +418,7 @@ function renderTable(){
         '<td>'+cn(r.sl_shopee,"n")+'</td>'+
         '<td>'+cn(r.sl_tiktok,"n")+'</td>'+
         '<td>'+cn(r.sl_si,"n")+'</td>'+
+        '<td>'+cn(r.sl_top_value,"n")+'</td>'+
         '<td>'+cd(r.avg_sl_thang)+'</td>'+
         '<td>'+cn(r.tong_sl_ban,"n")+'</td>'+
         '<td>'+cbh(r)+'</td>'+
@@ -435,9 +439,9 @@ function exportData(){
   var stl=function(r){return{critical:"Can day",warn:"Binh thuong",ok:"Tot",zero:"Het hang",check:"Check"}[getStatus(r)];};
   var rows;
   if(currentTab==="lock"){
-    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho 1013":n(r.ton_1013),"Ton kho Others":n(r.ton_others),"Ton kho BN":n(r.ton_bn),"Ton kho 1003":n(r.ton_1003),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"Ton FBS":n(r.ton_fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Trang thai":stl(r)};});
+    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho 1013":n(r.ton_1013),"Ton kho Others":n(r.ton_others),"Ton kho BN":n(r.ton_bn),"Ton kho 1003":n(r.ton_1003),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"Ton FBS":n(r.ton_fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Trang thai":stl(r)};});
   } else {
-    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho":n(r.ton_kho),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"FBS":n(r.fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Trang thai":stl(r)};});
+    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho":n(r.ton_kho),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"FBS":n(r.fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Trang thai":stl(r)};});
   }
   var ws=XLSX.utils.json_to_sheet(rows);
   var wb=XLSX.utils.book_new();

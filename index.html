@@ -183,6 +183,19 @@ var BADGE = {
 function n(v){var x=parseFloat(v);return isNaN(x)?0:x;}
 function cn(v,cls){var x=n(v);if(x===0)return'<span class="n0">0</span>';return'<span class="'+cls+'">'+Math.round(x).toLocaleString("vi-VN")+'</span>';}
 function cnTot(v){var x=n(v);if(x<0)return'<span style="font-family:var(--mono);color:var(--red);font-weight:600;">'+Math.round(x).toLocaleString("vi-VN")+' !</span>';if(x===0)return'<span class="n0">0</span>';return'<span class="n-tot">'+Math.round(x).toLocaleString("vi-VN")+'</span>';}
+function cnGtht(r){
+  var x=n(r.tong_ton_va_duong)*n(r.gia_von);
+  if(x===0)return'<span class="n0">0</span>';
+  // Color scale hồng pastel như Google Sheets: <=30M trắng/hồng rất nhạt, >=100M đỏ hồng đậm
+  var MIN=30000000,MAX=100000000;
+  var t=Math.min(1,Math.max(0,(x-MIN)/(MAX-MIN)));
+  // Interpolate từ rgb(255,235,235) → rgb(220,80,80)
+  var r2=Math.round(255-t*35);
+  var g2=Math.round(235-t*155);
+  var b2=Math.round(235-t*155);
+  var color='rgb('+r2+','+g2+','+b2+')';
+  return'<span class="n" style="color:'+color+';font-weight:'+(t>0.7?'600':'400')+'">'+Math.round(x).toLocaleString("vi-VN")+'</span>';
+}
 function cd(v){var x=n(v);if(x===0)return'<span class="n0">-</span>';return'<span class="n">'+x.toFixed(1)+'</span>';}
 
 function getFBS(r){return n(currentTab==="lock"?r.ton_fbs:r.fbs);}
@@ -286,6 +299,8 @@ var LOCK_COLS = [
   {col:"avg_sl_thang",type:"num",label:"AVG SL/Thang co ban",cls:"",w:150},
   {col:"tong_sl_ban",type:"num",label:"Tong SL ban",cls:"",w:110},
   {col:"ban_het",type:"num",label:"Thoi gian ban het Ton",cls:"",w:160},
+  {col:"gia_von",type:"num",label:"Gia von",cls:"",w:110},
+  {col:"gia_tri_hang_ton",type:"num",label:"Gia tri hang ton",cls:"",w:130},
   {col:"status",type:"select",label:"Trang thai",cls:"",w:110,last:true}
 ];
 var ELMICH_COLS = [
@@ -303,6 +318,8 @@ var ELMICH_COLS = [
   {col:"avg_sl_thang",type:"num",label:"AVG SL/Thang co ban",cls:"",w:150},
   {col:"tong_sl_ban",type:"num",label:"Tong SL ban",cls:"",w:120},
   {col:"ban_het",type:"num",label:"Thoi gian ban het Ton",cls:"",w:160},
+  {col:"gia_von",type:"num",label:"Gia von",cls:"",w:110},
+  {col:"gia_tri_hang_ton",type:"num",label:"Gia tri hang ton",cls:"",w:130},
   {col:"status",type:"select",label:"Trang thai",cls:"",w:110,last:true}
 ];
 
@@ -406,6 +423,8 @@ function renderTable(){
         '<td>'+cd(r.avg_sl_thang)+'</td>'+
         '<td>'+cn(r.tong_sl_ban,"n")+'</td>'+
         '<td>'+cbh(r)+'</td>'+
+        '<td>'+cn(r.gia_von,'n')+'</td>'+
+        '<td>'+cnGtht(r)+'</td>'+
         '<td>'+BADGE[s]+'</td>';
     } else {
       row='<td>'+r.sku+'</td>'+
@@ -439,7 +458,7 @@ function exportData(){
   var stl=function(r){return{critical:"Can day",warn:"Binh thuong",ok:"Tot",zero:"Het hang",check:"Check"}[getStatus(r)];};
   var rows;
   if(currentTab==="lock"){
-    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho 1013":n(r.ton_1013),"Ton kho Others":n(r.ton_others),"Ton kho BN":n(r.ton_bn),"Ton kho 1003":n(r.ton_1003),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"Ton FBS":n(r.ton_fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Trang thai":stl(r)};});
+    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho 1013":n(r.ton_1013),"Ton kho Others":n(r.ton_others),"Ton kho BN":n(r.ton_bn),"Ton kho 1003":n(r.ton_1003),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"Ton FBS":n(r.ton_fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Gia von":n(r.gia_von),"Gia tri hang ton":Math.round(n(r.tong_ton_va_duong)*n(r.gia_von)),"Trang thai":stl(r)};});
   } else {
     rows=data.map(function(r){return{"SKU":r.sku,"Ton kho":n(r.ton_kho),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"FBS":n(r.fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Trang thai":stl(r)};});
   }

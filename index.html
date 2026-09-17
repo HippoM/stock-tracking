@@ -186,15 +186,23 @@ function cnTot(v){var x=n(v);if(x<0)return'<span style="font-family:var(--mono);
 function cnGtht(r){
   var x=n(r.tong_ton_va_duong)*n(r.gia_von);
   if(x===0)return'<span class="n0">0</span>';
-  // Color scale hồng pastel như Google Sheets: <=30M trắng/hồng rất nhạt, >=100M đỏ hồng đậm
-  var MIN=30000000,MAX=100000000;
-  var t=Math.min(1,Math.max(0,(x-MIN)/(MAX-MIN)));
-  // Interpolate từ rgb(255,235,235) → rgb(220,80,80)
-  var r2=Math.round(255-t*35);
-  var g2=Math.round(235-t*155);
-  var b2=Math.round(235-t*155);
-  var color='rgb('+r2+','+g2+','+b2+')';
-  return'<span class="n" style="color:'+color+';font-weight:'+(t>0.7?'600':'400')+'">'+Math.round(x).toLocaleString("vi-VN")+'</span>';
+  // Color scale: <5M xám, 5M-30M hồng nhạt, 30M-100M hồng đậm, >100M đỏ đậm bold
+  var color,fw='400';
+  if(x<5000000){
+    color='var(--text3)';
+  } else if(x<30000000){
+    var t=(x-5000000)/25000000;
+    var g2=Math.round(220-t*60),b2=Math.round(220-t*60);
+    color='rgb(255,'+g2+','+b2+')';
+  } else if(x<100000000){
+    var t=(x-30000000)/70000000;
+    var g2=Math.round(160-t*80),b2=Math.round(160-t*80);
+    color='rgb(255,'+g2+','+b2+')';
+    fw=t>0.5?'600':'400';
+  } else {
+    color='rgb(220,50,50)';fw='700';
+  }
+  return'<span class="n" style="color:'+color+';font-weight:'+fw+'">'+Math.round(x).toLocaleString("vi-VN")+'</span>';
 }
 function cd(v){var x=n(v);if(x===0)return'<span class="n0">-</span>';return'<span class="n">'+x.toFixed(1)+'</span>';}
 

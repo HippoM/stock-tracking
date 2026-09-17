@@ -459,6 +459,8 @@ function renderTable(){
         '<td>'+cd(r.avg_sl_thang)+'</td>'+
         '<td>'+cn(r.tong_sl_ban,"n")+'</td>'+
         '<td>'+cbh(r)+'</td>'+
+        '<td>'+cn(r.gia_von,'n')+'</td>'+
+        '<td>'+cnGtht(r)+'</td>'+
         '<td>'+BADGE[s]+'</td>';
     }
     return'<tr class="'+cls+'">'+row+'</tr>';
@@ -478,7 +480,7 @@ function exportData(){
   if(currentTab==="lock"){
     rows=data.map(function(r){return{"SKU":r.sku,"Ton kho 1013":n(r.ton_1013),"Ton kho Others":n(r.ton_others),"Ton kho BN":n(r.ton_bn),"Ton kho 1003":n(r.ton_1003),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"Ton FBS":n(r.ton_fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Gia von":n(r.gia_von),"Gia tri hang ton":Math.round(n(r.tong_ton_va_duong)*n(r.gia_von)),"Trang thai":stl(r)};});
   } else {
-    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho":n(r.ton_kho),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"FBS":n(r.fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Trang thai":stl(r)};});
+    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho":n(r.ton_kho),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"FBS":n(r.fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Gia von":n(r.gia_von),"Gia tri hang ton":Math.round(n(r.tong_ton_va_duong)*n(r.gia_von)),"Trang thai":stl(r)};});
   }
   var ws=XLSX.utils.json_to_sheet(rows);
   var wb=XLSX.utils.book_new();

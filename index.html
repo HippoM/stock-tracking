@@ -394,6 +394,7 @@ function renderTable(){
       var val=CF[col];if(!val)continue;
       if(col==="gia_tri_hang_ton"&&val instanceof Set){
         var x=n(r.tong_ton_va_duong)*n(r.gia_von);
+        if(x===0){return false;}  // x=0 means no gia_von data, exclude when filtering
         var bucket=x>=100000000?"≥ 100M":x>=30000000?"30M – 100M":"< 30M";
         if(!val.has(bucket))return false;
       } else if(val instanceof Set&&!val.has(getDisplayVal(col,r)))return false;
@@ -535,7 +536,13 @@ function uncheckAll(){document.getElementById("fp-list").querySelectorAll("input
 function applyChecklist(){
   var s=pendingChecks[activeCol];
   if(!s||s.size===0){delete CF[activeCol];}
-  else{var total=getUniqueVals(activeCol).length;if(s.size>=total)delete CF[activeCol];else CF[activeCol]=new Set(s);}
+  else{
+    var total=getUniqueVals(activeCol).length;
+    // For bucket columns, always apply even if all selected (explicit selection)
+    var isBucket=(activeCol==="gia_tri_hang_ton");
+    if(!isBucket&&s.size>=total)delete CF[activeCol];
+    else CF[activeCol]=new Set(s);
+  }
   updateFilterBtns();renderTable();closePanel();
 }
 

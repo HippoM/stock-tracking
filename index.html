@@ -374,6 +374,7 @@ function getDisplayVal(col,r){
   if(col==="status")return STATUS_LABEL[getStatus(r)];
   if(col==="ban_het"){var bh=banHet(r);if(bh===null)return"Het hang";if(bh===Infinity)return"-";return String(Math.round(bh*100)/100);}
   if(col==="sku")return r.sku;
+  if(col==="gia_tri_hang_ton"){var x=n(r.tong_ton_va_duong)*n(r.gia_von);return x===0?"0":Math.round(x).toLocaleString("vi-VN");}
   var x=n(r[col]);return x===0?"0":Math.round(x).toLocaleString("vi-VN");
 }
 
@@ -396,6 +397,10 @@ function renderTable(){
       return(ba-bb)*dir;
     }
     if(sc==="sku")return sd==="asc"?a.sku.localeCompare(b.sku):b.sku.localeCompare(a.sku);
+    if(sc==="gia_tri_hang_ton"){
+      var va=n(a.tong_ton_va_duong)*n(a.gia_von),vb=n(b.tong_ton_va_duong)*n(b.gia_von);
+      return sd==="asc"?va-vb:vb-va;
+    }
     return sd==="asc"?n(a[sc])-n(b[sc]):n(b[sc])-n(a[sc]);
   });
   document.getElementById("row-count").textContent=data.length.toLocaleString("vi-VN")+" SKU";

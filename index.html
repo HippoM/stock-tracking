@@ -568,7 +568,13 @@ function openPanel(col,type,btn){
   var th=document.querySelector('[data-col="'+col+'"]');
   document.getElementById("fp-label").textContent=th?th.innerText.replace(/[vAZ-]/g,"").trim():col;
   document.getElementById("fp-search").value="";
-  if(CF[col] instanceof Set)pendingChecks[col]=new Set(CF[col]);else pendingChecks[col]=new Set();
+  if(CF[col] instanceof Set){
+    pendingChecks[col]=new Set(CF[col]);
+  } else {
+    // For bucket cols, init with ALL values so bỏ tick works correctly
+    var allVals=getUniqueVals(col).map(function(e){return e[0];});
+    pendingChecks[col]=new Set(allVals);
+  }
   updateSortBtns();renderChecklist();
   var rect=btn.getBoundingClientRect();
   panel.style.top=(rect.bottom+6)+"px";

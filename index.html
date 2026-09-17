@@ -392,7 +392,11 @@ function renderTable(){
     if(search&&!r.sku.toLowerCase().includes(search))return false;
     for(var col in CF){
       var val=CF[col];if(!val)continue;
-      if(val instanceof Set&&!val.has(getDisplayVal(col,r)))return false;
+      if(col==="gia_tri_hang_ton"&&val instanceof Set){
+        var x=n(r.tong_ton_va_duong)*n(r.gia_von);
+        var bucket=x>=100000000?"≥ 100M":x>=30000000?"30M – 100M":"< 30M";
+        if(!val.has(bucket))return false;
+      } else if(val instanceof Set&&!val.has(getDisplayVal(col,r)))return false;
     }
     return true;
   });
@@ -483,6 +487,17 @@ function exportData(){
 }
 
 function getUniqueVals(col){
+  // Special buckets for gia_tri_hang_ton
+  if(col==="gia_tri_hang_ton"){
+    var buckets={"≥ 100M":0,"30M – 100M":0,"< 30M":0};
+    D.forEach(function(r){
+      var x=n(r.tong_ton_va_duong)*n(r.gia_von);
+      if(x===0){}else if(x>=100000000)buckets["≥ 100M"]++;
+      else if(x>=30000000)buckets["30M – 100M"]++;
+      else buckets["< 30M"]++;
+    });
+    return Object.entries(buckets).filter(function(e){return e[1]>0;});
+  }
   var vals={};
   D.forEach(function(r){
     var v=getDisplayVal(col,r);

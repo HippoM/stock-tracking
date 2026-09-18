@@ -184,7 +184,7 @@ function n(v){var x=parseFloat(v);return isNaN(x)?0:x;}
 function cn(v,cls){var x=n(v);if(x===0)return'<span class="n0">0</span>';return'<span class="'+cls+'">'+Math.round(x).toLocaleString("vi-VN")+'</span>';}
 function cnTot(v){var x=n(v);if(x<0)return'<span style="font-family:var(--mono);color:var(--red);font-weight:600;">'+Math.round(x).toLocaleString("vi-VN")+' !</span>';if(x===0)return'<span class="n0">0</span>';return'<span class="n-tot">'+Math.round(x).toLocaleString("vi-VN")+'</span>';}
 function cnGtht(r){
-  var x=n(r.tong_ton_va_duong)*n(r.gia_von);
+  var x=(n(r.tong_ton_va_duong)+n(r.block_hang))*n(r.gia_von);
   if(x===0)return'<span class="n0">0</span>';
   // Color scale: <5M xám, 5M-30M hồng nhạt, 30M-100M hồng đậm, >100M đỏ đậm bold
   var color,fw='400';
@@ -383,7 +383,7 @@ function getDisplayVal(col,r){
   if(col==="status")return STATUS_LABEL[getStatus(r)];
   if(col==="ban_het"){var bh=banHet(r);if(bh===null)return"Het hang";if(bh===Infinity)return"-";return String(Math.round(bh*100)/100);}
   if(col==="sku")return r.sku;
-  if(col==="gia_tri_hang_ton"){var x=n(r.tong_ton_va_duong)*n(r.gia_von);return x===0?"0":Math.round(x).toLocaleString("vi-VN");}
+  if(col==="gia_tri_hang_ton"){var x=(n(r.tong_ton_va_duong)+n(r.block_hang))*n(r.gia_von);return x===0?"0":Math.round(x).toLocaleString("vi-VN");}
   var x=n(r[col]);return x===0?"0":Math.round(x).toLocaleString("vi-VN");
 }
 
@@ -394,7 +394,7 @@ function renderTable(){
     for(var col in CF){
       var val=CF[col];if(!val)continue;
       if(col==="gia_tri_hang_ton"&&val instanceof Set){
-        var x=n(r.tong_ton_va_duong)*n(r.gia_von);
+        var x=(n(r.tong_ton_va_duong)+n(r.block_hang))*n(r.gia_von);
         if(x===0){return false;}  // x=0 means no gia_von data, exclude when filtering
         var bucket=x>=100000000?"≥ 100M":x>=30000000?"30M – 100M":"< 30M";
         if(!val.has(bucket))return false;
@@ -480,9 +480,9 @@ function exportData(){
   var stl=function(r){return{critical:"Can day",warn:"Binh thuong",ok:"Tot",zero:"Het hang",check:"Check"}[getStatus(r)];};
   var rows;
   if(currentTab==="lock"){
-    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho 1013":n(r.ton_1013),"Ton kho Others":n(r.ton_others),"Ton kho BN":n(r.ton_bn),"Ton kho 1003":n(r.ton_1003),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"Ton FBS":n(r.ton_fbs),"Block hang":n(r.block_hang),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Gia von":n(r.gia_von),"Gia tri hang ton":Math.round(n(r.tong_ton_va_duong)*n(r.gia_von)),"Trang thai":stl(r)};});
+    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho 1013":n(r.ton_1013),"Ton kho Others":n(r.ton_others),"Ton kho BN":n(r.ton_bn),"Ton kho 1003":n(r.ton_1003),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"Ton FBS":n(r.ton_fbs),"Block hang":n(r.block_hang),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Gia von":n(r.gia_von),"Gia tri hang ton":Math.round((n(r.tong_ton_va_duong)+n(r.block_hang))*n(r.gia_von)),"Trang thai":stl(r)};});
   } else {
-    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho":n(r.ton_kho),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"FBS":n(r.fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Gia von":n(r.gia_von),"Gia tri hang ton":Math.round(n(r.tong_ton_va_duong)*n(r.gia_von)),"Trang thai":stl(r)};});
+    rows=data.map(function(r){return{"SKU":r.sku,"Ton kho":n(r.ton_kho),"Tong Ton+Duong":n(r.tong_ton_va_duong),"Ton hien tai":n(r.ton_hien_tai),"Hang duong":n(r.hang_di_duong),"FBS":n(r.fbs),"Tong SL thang":n(r.tong_sl_thang),"Shopee":n(r.sl_shopee),"Tiktok":n(r.sl_tiktok),"Si":n(r.sl_si),"Top Value":n(r.sl_top_value),"AVG":n(r.avg_sl_thang),"Tong SL ban":n(r.tong_sl_ban),"Ban het":bhl(r),"Gia von":n(r.gia_von),"Gia tri hang ton":Math.round((n(r.tong_ton_va_duong)+n(r.block_hang))*n(r.gia_von)),"Trang thai":stl(r)};});
   }
   var ws=XLSX.utils.json_to_sheet(rows);
   var wb=XLSX.utils.book_new();
@@ -496,7 +496,7 @@ function getUniqueVals(col){
   if(col==="gia_tri_hang_ton"){
     var buckets={"≥ 100M":0,"30M – 100M":0,"< 30M":0};
     D.forEach(function(r){
-      var x=n(r.tong_ton_va_duong)*n(r.gia_von);
+      var x=(n(r.tong_ton_va_duong)+n(r.block_hang))*n(r.gia_von);
       if(x===0){}else if(x>=100000000)buckets["≥ 100M"]++;
       else if(x>=30000000)buckets["30M – 100M"]++;
       else buckets["< 30M"]++;
